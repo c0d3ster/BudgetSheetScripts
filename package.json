@@ -7,11 +7,18 @@
   "scripts": {
     "build": "rollup -c && cp src/appsscript.json build/",
     "build:watch": "rollup -c --watch",
-    "push": "npm run build && clasp push",
+    "dev": "yarn build:watch",
+    "push": "yarn build && clasp push",
     "pull": "clasp pull",
-    "deploy": "npm run build && clasp deploy",
+    "deploy": "yarn build && clasp deploy",
+    "deploy:prod": "yarn build && clasp deploy --versionNumber 1",
+    "deploy:template": "yarn build && clasp deploy --description 'Budget Sheet Template v1.0'",
+    "deploy:webapp": "yarn build && clasp deploy --description 'Budget Sheet Web App - Monthly Subscription'",
+    "template:prepare": "yarn build && echo 'Template ready for distribution'",
+    "webapp:prepare": "yarn build && echo 'Web app ready for deployment'",
     "open": "clasp open",
-    "logs": "clasp logs"
+    "logs": "clasp logs",
+    "status": "clasp status"
   },
   "devDependencies": {
     "@google/clasp": "^2.4.2",
@@ -23,9 +30,9 @@
     "@babel/preset-typescript": "^7.0.0",
     "@babel/plugin-transform-runtime": "^7.0.0",
     "@babel/runtime": "^7.0.0",
-    "pnpm": "^10.12.4",
     "rollup": "^4.0.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "yarn": "^1.22.22"
   },
   "keywords": [
     "google-apps-script",
