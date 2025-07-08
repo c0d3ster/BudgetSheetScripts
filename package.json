@@ -1,0 +1,41 @@
+{
+  "name": "google-apps-script-budget",
+  "version": "1.0.0",
+  "description": "Budget tracking with Google Apps Script",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "build": "rollup -c && cp src/appsscript.json build/",
+    "build:watch": "rollup -c --watch",
+    "push": "npm run build && clasp push",
+    "pull": "clasp pull",
+    "deploy": "npm run build && clasp deploy",
+    "open": "clasp open",
+    "logs": "clasp logs"
+  },
+  "devDependencies": {
+    "@google/clasp": "^2.4.2",
+    "@types/google-apps-script": "^1.0.99",
+    "@rollup/plugin-babel": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.0",
+    "@babel/core": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-typescript": "^7.0.0",
+    "@babel/plugin-transform-runtime": "^7.0.0",
+    "@babel/runtime": "^7.0.0",
+    "pnpm": "^10.12.4",
+    "rollup": "^4.0.0",
+    "typescript": "^5.8.3"
+  },
+  "keywords": [
+    "google-apps-script",
+    "budget",
+    "automation"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "glob": "^11.0.3"
+  },
+  "sideEffects": true
+}
