@@ -109,17 +109,17 @@ import { CHART_CONFIG, SHEET_CONFIG, INVESTMENT_PLANS_CONFIG } from './constants
    ```
 3. Install dependencies:
    ```bash
-   npm install
+   yarn install
    ```
 
 ## Development Workflow
 
-- **Push changes to Google Apps Script**: `npm run push`
-- **Pull changes from Google Apps Script**: `npm run pull`
-- **Open in Google Apps Script editor**: `npm run open`
-- **View logs**: `npm run logs`
+- **Push changes to Google Apps Script**: `yarn push`
+- **Pull changes from Google Apps Script**: `yarn pull`
+- **Open in Google Apps Script editor**: `yarn open`
+- **View logs**: `yarn logs`
 
 ## Notes
 - All `.ts` files are compiled and pushed to Google Apps Script
-- Use `npm run push` after making changes to sync with Google Apps Script
+- Use `yarn push` after making changes to sync with Google Apps Script
 - The TypeScript configuration provides better IntelliSense in your editor 
