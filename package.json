@@ -9,7 +9,15 @@
     "build:watch": "rollup -c --watch",
     "dev": "yarn build:watch",
     "push": "yarn build && clasp push",
+<<<<<<< Updated upstream
     "pull": "clasp pull",
+=======
+    "push:dev": "yarn build && cp .clasp.dev.json .clasp.json && clasp push",
+    "push:prod": "yarn build && cp .clasp.prod.json .clasp.json && clasp push",
+    "pull": "clasp pull",
+    "pull:dev": "cp .clasp.dev.json .clasp.json && clasp pull",
+    "pull:prod": "cp .clasp.prod.json .clasp.json && clasp pull",
+>>>>>>> Stashed changes
     "deploy": "yarn build && clasp deploy",
     "deploy:prod": "yarn build && clasp deploy --versionNumber 1",
     "deploy:template": "yarn build && clasp deploy --description 'Budget Sheet Template v1.0'",
@@ -17,6 +25,11 @@
     "template:prepare": "yarn build && echo 'Template ready for distribution'",
     "webapp:prepare": "yarn build && echo 'Web app ready for deployment'",
     "open": "clasp open",
+<<<<<<< Updated upstream
+=======
+    "open:dev": "cp .clasp.dev.json .clasp.json && clasp open",
+    "open:prod": "cp .clasp.prod.json .clasp.json && clasp open",
+>>>>>>> Stashed changes
     "logs": "clasp logs",
     "status": "clasp status"
   },

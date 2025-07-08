@@ -114,17 +114,47 @@ import { CHART_CONFIG, SHEET_CONFIG, INVESTMENT_PLANS_CONFIG } from './constants
 
 ## Development Workflow
 
+<<<<<<< Updated upstream
 ### Daily Development
 - **Build and push changes**: `yarn push` - Builds TypeScript and pushes to Google Apps Scripts
 - **Development mode with watch**: `yarn dev` - Watches for changes and auto-rebuilds
 - **Pull changes from Google Apps Scripts**: `yarn pull` - Syncs changes from the online editor
 - **Open in Google Apps Script editor**: `yarn open`
+=======
+<<<<<<< Updated upstream
+- **Push changes to Google Apps Script**: `npm run push`
+- **Pull changes from Google Apps Script**: `npm run pull`
+- **Open in Google Apps Script editor**: `npm run open`
+- **View logs**: `npm run logs`
+=======
+### Environment Setup
+- **Dev Sheet**: Used for development and testing
+- **Production Template Sheet**: Used for customer distribution (Etsy template)
+
+### Daily Development
+- **Build and push to dev**: `yarn push:dev` - Builds TypeScript and pushes to dev sheet
+- **Development mode with watch**: `yarn dev` - Watches for changes and auto-rebuilds
+- **Pull changes from dev**: `yarn pull:dev` - Syncs changes from dev sheet
+- **Open dev sheet**: `yarn open:dev`
+>>>>>>> Stashed changes
 - **View logs**: `yarn logs`
 - **Check status**: `yarn status`
 
 ### Production Deployments
+<<<<<<< Updated upstream
 - **Create deployment**: `yarn deploy` - Creates a new deployment version
 - **Production deployment**: `yarn deploy:prod` - Creates a numbered production version
+=======
+- **Manual production push**: `yarn push:prod` - Manually push to production template
+- **Create deployment**: `yarn deploy` - Creates a new deployment version
+- **Production deployment**: `yarn deploy:prod` - Creates a numbered production version
+>>>>>>> Stashed changes
+
+### Automated Deployments (GitHub Actions)
+- **PR/Develop branch**: Automatically deploys to dev sheet
+- **Main branch merge**: Automatically deploys to production template sheet
+- **Releases**: Automatically created on production deployments
+>>>>>>> Stashed changes
 
 ## Notes
 - All `.ts` files are compiled and pushed to Google Apps Script
