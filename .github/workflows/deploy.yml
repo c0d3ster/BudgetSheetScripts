@@ -5,11 +5,21 @@ on:
     branches: [ main, develop ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+        - dev
+        - production
 
 jobs:
   deploy-dev:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/develop'
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/develop' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev')
     
     steps:
     - uses: actions/checkout@v4
@@ -25,11 +35,6 @@ jobs:
     
     - name: Build project
       run: yarn build
-    
-    - name: Setup Google Apps Script
-      uses: google-github-actions/auth@v2
-      with:
-        credentials_json: ${{ secrets.GOOGLE_APPS_SCRIPT_CREDENTIALS }}
     
     - name: Deploy to Dev
       run: |
@@ -40,7 +45,7 @@ jobs:
 
   deploy-prod:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
     
     steps:
     - uses: actions/checkout@v4
@@ -56,11 +61,6 @@ jobs:
     
     - name: Build project
       run: yarn build
-    
-    - name: Setup Google Apps Script
-      uses: google-github-actions/auth@v2
-      with:
-        credentials_json: ${{ secrets.GOOGLE_APPS_SCRIPT_CREDENTIALS }}
     
     - name: Deploy to Production
       run: |
@@ -77,10 +77,10 @@ jobs:
         tag_name: v${{ github.run_number }}
         release_name: Release v${{ github.run_number }}
         body: |
-          Automated deployment to production template sheet.
+          Manual deployment to production template sheet.
           
           Changes in this release:
-          - Automated deployment from main branch
+          - Manual deployment triggered
           - Template sheet updated with latest features
         draft: false
         prerelease: false 
