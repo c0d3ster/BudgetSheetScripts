@@ -36,12 +36,16 @@ jobs:
       - name: Build project
         run: yarn build
 
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GOOGLE_PROJECT_ID_DEV }}.svc.id.goog
+          service_account: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_DEV }}
+
       - name: Deploy to Dev
         run: |
           cp .clasp.dev.json .clasp.json
           npx clasp push
-        env:
-          CLASP_TOKEN: ${{ secrets.CLASP_TOKEN }}
 
   deploy-prod:
     runs-on: ubuntu-latest
@@ -62,12 +66,16 @@ jobs:
       - name: Build project
         run: yarn build
 
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GOOGLE_PROJECT_ID_PROD }}.svc.id.goog
+          service_account: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_PROD }}
+
       - name: Deploy to Production
         run: |
           cp .clasp.prod.json .clasp.json
           npx clasp push
-        env:
-          CLASP_TOKEN: ${{ secrets.CLASP_TOKEN }}
 
       - name: Create Release
         uses: actions/create-release@v1
