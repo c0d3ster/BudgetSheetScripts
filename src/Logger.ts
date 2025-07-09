@@ -10,7 +10,7 @@ export const log = (message: string) => {
   const sheet = ss.getSheetByName(sheetName)
 
   if (!sheet) {
-    console.error('Monthly sheet not found for logging')
+    Logger.log('Monthly sheet not found for logging')
     return
   }
 
@@ -27,7 +27,7 @@ export const log = (message: string) => {
 
   // Get current log content
   const logCell = sheet.getRange(DEBUG_CONFIG.LOG_CELL)
-  let currentLogs = logCell.getValue() || ''
+  const currentLogs = logCell.getValue() || ''
 
   // Add new log message
   const newLogs = currentLogs + (currentLogs ? '\n' : '') + logMessage
@@ -53,7 +53,16 @@ export const clearLogs = () => {
 }
 
 export const logError = (error: unknown, context = ''): void => {
-  const errorMessage = context ? `${context}: ${error instanceof Error ? error.message : String(error)}` : `ERROR: ${error instanceof Error ? error.message : String(error)}`
+  let errorMessage: string
+
+  if (typeof error === 'string') {
+    errorMessage = context ? `${context}: ${error}` : `ERROR: ${error}`
+  } else if (error instanceof Error) {
+    errorMessage = context ? `${context}: ${error.message}` : `ERROR: ${error.message}`
+  } else {
+    errorMessage = context ? `${context}: ${String(error)}` : `ERROR: ${String(error)}`
+  }
+
   log(errorMessage)
 }
 
@@ -65,10 +74,8 @@ export const logDeployment = (): void => {
   const timestamp = new Date().toISOString()
   const version = `v${Date.now()}`
 
-  console.log(`🚀 Deployment verified: ${version} at ${timestamp}`)
-
-  // Also log to Google Apps Script logs for verification
-  Logger.log(`Deployment verified: ${version} at ${timestamp}`)
+  // Log to Google Apps Script logs for verification
+  Logger.log(`🚀 Deployment verified: ${version} at ${timestamp}`)
 
   // You can also add this to a cell in your sheet for visual verification
   try {
@@ -84,7 +91,7 @@ export const logDeployment = (): void => {
       logSheet.deleteRows(1, lastRow - 10)
     }
   } catch (error) {
-    console.log('Could not write to deployment log sheet:', error)
+    Logger.log('Could not write to deployment log sheet:', error)
   }
 }
 
@@ -100,4 +107,3 @@ export const verifyDeployment = (): string => {
 
   return `✅ Deployment verified: ${version} at ${timestamp}`
 }
-

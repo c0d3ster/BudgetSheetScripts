@@ -72,4 +72,4 @@ export const resetFixedExpensesSourceRange = () => {
 export const resetVariableExpensesSourceRange = () => {
   updateVariableExpensesSourceRange(SOURCE_RANGE_CONFIG.VARIABLE_EXPENSES.DEFAULT_RANGE)
   log(`Reset variable expenses source range to default: ${SOURCE_RANGE_CONFIG.VARIABLE_EXPENSES.DEFAULT_RANGE}`)
-} 
+}

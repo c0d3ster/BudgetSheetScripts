@@ -18,21 +18,27 @@ export const setupDataRangeCells = () => {
   sheet.getRange(CHART_CONFIG.EXPENSES.DATA_RANGE_CELL).setValue(CHART_CONFIG.EXPENSES.DEFAULT_DATA_RANGE)
 
   sheet.getRange(CHART_CONFIG.INVESTMENT_PLANS.LABEL_CELL).setValue(CHART_CONFIG.INVESTMENT_PLANS.LABEL)
-  sheet.getRange(CHART_CONFIG.INVESTMENT_PLANS.DATA_RANGE_CELL).setValue(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE)
+  sheet
+    .getRange(CHART_CONFIG.INVESTMENT_PLANS.DATA_RANGE_CELL)
+    .setValue(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE)
 
   // Set up source range cells - labels in X, values in Y
   sheet.getRange(SOURCE_RANGE_CONFIG.EARNINGS.LABEL_CELL).setValue(SOURCE_RANGE_CONFIG.EARNINGS.LABEL)
   sheet.getRange(SOURCE_RANGE_CONFIG.EARNINGS.VALUE_CELL).setValue(SOURCE_RANGE_CONFIG.EARNINGS.DEFAULT_RANGE)
   sheet.getRange(SOURCE_RANGE_CONFIG.FIXED_EXPENSES.LABEL_CELL).setValue(SOURCE_RANGE_CONFIG.FIXED_EXPENSES.LABEL)
-  sheet.getRange(SOURCE_RANGE_CONFIG.FIXED_EXPENSES.VALUE_CELL).setValue(SOURCE_RANGE_CONFIG.FIXED_EXPENSES.DEFAULT_RANGE)
+  sheet
+    .getRange(SOURCE_RANGE_CONFIG.FIXED_EXPENSES.VALUE_CELL)
+    .setValue(SOURCE_RANGE_CONFIG.FIXED_EXPENSES.DEFAULT_RANGE)
   sheet.getRange(SOURCE_RANGE_CONFIG.VARIABLE_EXPENSES.LABEL_CELL).setValue(SOURCE_RANGE_CONFIG.VARIABLE_EXPENSES.LABEL)
-  sheet.getRange(SOURCE_RANGE_CONFIG.VARIABLE_EXPENSES.VALUE_CELL).setValue(SOURCE_RANGE_CONFIG.VARIABLE_EXPENSES.DEFAULT_RANGE)
+  sheet
+    .getRange(SOURCE_RANGE_CONFIG.VARIABLE_EXPENSES.VALUE_CELL)
+    .setValue(SOURCE_RANGE_CONFIG.VARIABLE_EXPENSES.DEFAULT_RANGE)
 
   // Now try to find actual charts and log which ones are found
   const charts = sheet.getCharts()
   const foundCharts = new Set<string>()
 
-  charts.forEach((chart: GoogleAppsScript.Spreadsheet.EmbeddedChart) => {
+  charts.forEach(chart => {
     const ranges = chart.getRanges()
     if (ranges.length > 0) {
       ranges.forEach(range => {
@@ -53,7 +59,10 @@ export const setupDataRangeCells = () => {
         }
 
         // Check if this is the investment plan chart
-        if (rangeNotation.includes(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE) && !foundCharts.has('investment')) {
+        if (
+          rangeNotation.includes(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE) &&
+          !foundCharts.has('investment')
+        ) {
           log(`Found Investment Plans Chart using range: ${CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE}`)
           foundCharts.add('investment')
         }
@@ -136,4 +145,4 @@ export const resetExpenseDataRange = () => {
 export const resetInvestmentPlanDataRange = () => {
   updateInvestmentPlanDataRange(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE)
   log(`Reset investment plan data range to default: ${CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE}`)
-} 
+}

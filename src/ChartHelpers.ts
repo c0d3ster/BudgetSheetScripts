@@ -1,11 +1,7 @@
-import { CHART_CONFIG, SHEET_CONFIG, COLOR_SCHEMES, ColorScheme } from './constants'
-import { log } from './Logger'
+import { CHART_CONFIG, SHEET_CONFIG, COLOR_SCHEMES, ColorScheme, ChartConfig } from './constants'
+import { log, logError } from './Logger'
 
-export const colorPieChart = (
-  sheetName: string = 'Monthly',
-  dataRangeConfig: string,
-  colorScheme: ColorScheme
-) => {
+export const colorPieChart = (sheetName: string = 'Monthly', dataRangeConfig: string, colorScheme: ColorScheme) => {
   const ss = SpreadsheetApp.getActiveSpreadsheet()
   const sheet = ss.getSheetByName(sheetName)
   if (!sheet) {
@@ -19,9 +15,7 @@ export const colorPieChart = (
 
   const targetChart = charts.find(chart => {
     const ranges = chart.getRanges()
-    return ranges.length > 0 && ranges.some(range =>
-      range.getA1Notation().includes(dataRangeConfig)
-    )
+    return ranges.length > 0 && ranges.some(range => range.getA1Notation().includes(dataRangeConfig))
   })
 
   if (!targetChart) {
@@ -51,9 +45,16 @@ export const colorPieChart = (
 
   const interpolateColor = (color1: number[], color2: number[], t: number) => {
     // Linear interpolation between two colors
-    return '#' + [0, 1, 2].map(i =>
-      Math.round(color1[i] + (color2[i] - color1[i]) * t).toString(16).padStart(2, '0')
-    ).join('')
+    return (
+      '#' +
+      [0, 1, 2]
+        .map(i =>
+          Math.round(color1[i] + (color2[i] - color1[i]) * t)
+            .toString(16)
+            .padStart(2, '0')
+        )
+        .join('')
+    )
   }
 
   // Create color array only for valid data rows
@@ -75,10 +76,12 @@ export const colorPieChart = (
     colorArray.push(hex)
   })
 
-  log(`Color array length: ${colorArray.length}, Valid rows: ${validRows.length}, Total data rows: ${dataValues.length}`)
+  log(
+    `Color array length: ${colorArray.length}, Valid rows: ${validRows.length}, Total data rows: ${dataValues.length}`
+  )
 
   // Determine chart config based on data range
-  let chartConfig: any
+  let chartConfig: ChartConfig
 
   // Get data ranges from cells
   const earningsDataRange = sheet.getRange(CHART_CONFIG.EARNINGS.DATA_RANGE_CELL).getValue()
@@ -91,8 +94,9 @@ export const colorPieChart = (
   } else if (dataRangeConfig.includes(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE)) {
     chartConfig = CHART_CONFIG.INVESTMENT_PLANS
   } else {
-    // Default fallback
-    chartConfig = { WIDTH: 350, HEIGHT: 231, PIE_SLICE_TEXT: 'value', LEGEND_POSITION: 'auto', FONT_SIZE: 10 }
+    // No matching chart configuration found
+    logError(`No matching chart configuration found for data range: ${dataRangeConfig}`)
+    return
   }
 
   // Update the chart with the new colors
@@ -107,7 +111,10 @@ export const colorPieChart = (
       targetChart.getContainerInfo().getOffsetY()
     )
     .setOption('pieSliceText', chartConfig.PIE_SLICE_TEXT)
-    .setOption('legend', { position: chartConfig.LEGEND_POSITION, textStyle: { fontSize: chartConfig.FONT_SIZE } })
+    .setOption('legend', {
+      position: chartConfig.LEGEND_POSITION,
+      textStyle: { fontSize: chartConfig.FONT_SIZE },
+    })
     .setOption('colors', colorArray)
     .setOption('pieSliceBorderColor', 'white')
     .setOption('pieSliceBorderWidth', 2)
@@ -134,4 +141,4 @@ export const colorPieChartGreenToLightGreen = () => {
   if (earningsDataRange) {
     colorPieChart(SHEET_CONFIG.MONTHLY_SHEET, earningsDataRange, COLOR_SCHEMES.GREEN_TO_LIGHT_GREEN)
   }
-} 
+}
