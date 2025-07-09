@@ -16,6 +16,10 @@ on:
           - dev
           - production
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   deploy-dev:
     runs-on: ubuntu-latest
