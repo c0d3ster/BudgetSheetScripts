@@ -13,8 +13,8 @@ export const COLOR_SCHEMES = {
     highColor: [0xf1, 0xcc, 0xcc], // #F1CCCC - red
   },
   GREEN_TO_LIGHT_GREEN: {
-    lowColor: [0xad, 0xff, 0x2f], // #ADFF2F - green yellow (more yellow)
-    medColor: [0x7c, 0xfc, 0x7c], // #7CFC7C - light lime green (more pastel)
-    highColor: [0x32, 0xcd, 0x32], // #32CD32 - lime green (lighter but still most green)
+    lowColor: [0xe8, 0xf0, 0xd9], // #E8F0D9 - light green-yellow (low)
+    medColor: [0xd9, 0xea, 0xd3], // #D9EAD3 - original green (mid)
+    highColor: [0xb6, 0xd7, 0xa8], // #B6D7A8 - darker green (high)
   },
 }
