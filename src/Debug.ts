@@ -1,4 +1,4 @@
-import { DEBUG_CONFIG } from './constants'
+import { DEBUG_CONFIG } from '@/constants'
 
 // Debug mode setup and management
 

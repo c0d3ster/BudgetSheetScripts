@@ -1,13 +1,9 @@
-import { colorPieChartGreenToLightGreen, colorPieChartRedToYellow } from './ChartHelpers'
-import { DEBUG_CONFIG, SHEET_CONFIG } from './constants'
-import { toggleDebugVisibility } from './Debug'
-import { createInvestmentPlanPieChart } from './InvestmentPlans'
-import { log, logError } from './Logger'
-import {
-  getEarningsSourceRange,
-  getFixedExpensesSourceRange,
-  getVariableExpensesSourceRange,
-} from './SourceRangeManager'
+import { colorPieChartGreenToLightGreen, colorPieChartRedToYellow } from '@/ChartHelpers'
+import { DEBUG_CONFIG, SHEET_CONFIG } from '@/constants'
+import { toggleDebugVisibility } from '@/Debug'
+import { createInvestmentPlanPieChart } from '@/InvestmentPlans'
+import { log, logError } from '@/Logger'
+import { getEarningsSourceRange, getFixedExpensesSourceRange, getVariableExpensesSourceRange } from '@/managers'
 
 // Helper function to check if one range intersects with another range
 const isRangeIntersecting = (editedRange: string, sourceRange: string): boolean => {

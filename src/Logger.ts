@@ -1,5 +1,5 @@
-import { DEBUG_CONFIG } from './constants'
-import { isDebugModeEnabled } from './Debug'
+import { DEBUG_CONFIG } from '@/constants'
+import { isDebugModeEnabled } from '@/Debug'
 
 // Logger utility for Google Apps Script
 // Manages logging in U20 with aggregated log feed

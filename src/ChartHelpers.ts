@@ -1,5 +1,5 @@
-import { CHART_CONFIG, SHEET_CONFIG, COLOR_SCHEMES, ColorScheme, ChartConfig } from './constants'
-import { log, logError } from './Logger'
+import { CHART_CONFIG, SHEET_CONFIG, COLOR_SCHEMES, ColorScheme, ChartConfig } from '@/constants'
+import { log, logError } from '@/Logger'
 
 export const colorPieChart = (sheetName: string = 'Monthly', dataRangeConfig: string, colorScheme: ColorScheme) => {
   const ss = SpreadsheetApp.getActiveSpreadsheet()

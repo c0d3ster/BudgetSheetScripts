@@ -1,7 +1,7 @@
-import { setupDebugMode } from './Debug'
-import { createPlanDropdown } from './InvestmentPlans'
-import { setupDataRangeCells } from './DataRangeManager'
-import { log, logError } from './Logger'
+import { setupDebugMode } from '@/Debug'
+import { createPlanDropdown } from '@/InvestmentPlans'
+import { setupDataRangeCells } from '@/managers'
+import { log, logError } from '@/Logger'
 
 // Sheet Reset/Repair Tool
 // Run this if you accidentally delete or break chart labels, dropdowns, or debug controls.

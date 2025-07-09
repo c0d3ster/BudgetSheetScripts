@@ -1,6 +1,6 @@
 // Import investment plan data from constants
-import { CHART_CONFIG, INVESTMENT_PLANS_CONFIG, SHEET_CONFIG } from './constants'
-import { log, logError } from './Logger'
+import { CHART_CONFIG, INVESTMENT_PLANS_CONFIG, SHEET_CONFIG } from '@/constants'
+import { log, logError } from '@/Logger'
 
 export const getSelectedPlan = (): string | null => {
   const sheetName = SHEET_CONFIG.MONTHLY_SHEET

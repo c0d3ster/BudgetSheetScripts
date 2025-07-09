@@ -1,4 +1,4 @@
-name: Deploy to Google Apps Script
+name: Build Project
 
 on:
   push:
@@ -17,11 +17,10 @@ on:
           - production
 
 permissions:
-  id-token: write
   contents: read
 
 jobs:
-  deploy-dev:
+  build-dev:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' || github.ref == 'refs/heads/develop' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev')
 
@@ -40,18 +39,10 @@ jobs:
       - name: Build project
         run: yarn build
 
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          workload_identity_provider: '//iam.googleapis.com/projects/${{ secrets.GOOGLE_PROJECT_ID_DEV }}/locations/global/workloadIdentityPools/github-actions-dev/providers/github-dev'
-          service_account: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_DEV }}
+      - name: Build Complete
+        run: echo "Build completed successfully"
 
-      - name: Deploy to Dev
-        run: |
-          cp .clasp.dev.json .clasp.json
-          npx clasp push
-
-  deploy-prod:
+  build-prod:
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
 
@@ -70,16 +61,8 @@ jobs:
       - name: Build project
         run: yarn build
 
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          workload_identity_provider: '//iam.googleapis.com/projects/${{ secrets.GOOGLE_PROJECT_ID_PROD }}/locations/global/workloadIdentityPools/github-actions-prod/providers/github-prod'
-          service_account: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_PROD }}
-
-      - name: Deploy to Production
-        run: |
-          cp .clasp.prod.json .clasp.json
-          npx clasp push
+      - name: Build Complete
+        run: echo "Build completed successfully"
 
       - name: Create Release
         uses: actions/create-release@v1
