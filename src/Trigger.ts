@@ -1,8 +1,5 @@
 import { DEBUG_CONFIG, SHEET_CONFIG } from './constants'
-import {
-  colorPieChartRedToYellow,
-  colorPieChartGreenToLightGreen,
-} from './ChartHelpers'
+import { colorPieChartRedToYellow, colorPieChartGreenToLightGreen } from './ChartHelpers'
 import { createInvestmentPlanPieChart } from './InvestmentPlans'
 import { log, logError } from './Logger'
 import { toggleDebugVisibility } from './Debug'
@@ -13,10 +10,7 @@ import {
 } from './SourceRangeManager'
 
 // Helper function to check if one range intersects with another range
-const isRangeIntersecting = (
-  editedRange: string,
-  sourceRange: string
-): boolean => {
+const isRangeIntersecting = (editedRange: string, sourceRange: string): boolean => {
   try {
     // Parse the ranges to get their boundaries
     const edited = parseRange(editedRange)
@@ -36,9 +30,7 @@ const isRangeIntersecting = (
 }
 
 // Helper function to parse a range string (e.g., "G5:G16", "L5", "P10:Q11") into row/column boundaries
-const parseRange = (
-  rangeStr: string
-): { startRow: number; startCol: number; endRow: number; endCol: number } => {
+const parseRange = (rangeStr: string): { startRow: number; startCol: number; endRow: number; endCol: number } => {
   // Handle single cell (e.g., "L5")
   const singleCellMatch = rangeStr.match(/^([A-Z]+)(\d+)$/)
   if (singleCellMatch) {
@@ -93,11 +85,7 @@ export function onEdit(e: GoogleAppsScript.Events.SheetsOnEdit) {
     const variableExpensesSourceRange = getVariableExpensesSourceRange()
 
     // Check if source ranges are valid
-    if (
-      !earningsSourceRange ||
-      !fixedExpensesSourceRange ||
-      !variableExpensesSourceRange
-    ) {
+    if (!earningsSourceRange || !fixedExpensesSourceRange || !variableExpensesSourceRange) {
       log(
         `onEdit: One or more source ranges are empty. Earnings: "${earningsSourceRange}", Fixed: "${fixedExpensesSourceRange}", Variable: "${variableExpensesSourceRange}"`
       )
@@ -106,18 +94,9 @@ export function onEdit(e: GoogleAppsScript.Events.SheetsOnEdit) {
 
     // Check if the edited range intersects with any of the source ranges
     const editedRange = range.getA1Notation()
-    const isEarningsRange = isRangeIntersecting(
-      editedRange,
-      earningsSourceRange
-    )
-    const isFixedExpensesRange = isRangeIntersecting(
-      editedRange,
-      fixedExpensesSourceRange
-    )
-    const isVariableExpensesRange = isRangeIntersecting(
-      editedRange,
-      variableExpensesSourceRange
-    )
+    const isEarningsRange = isRangeIntersecting(editedRange, earningsSourceRange)
+    const isFixedExpensesRange = isRangeIntersecting(editedRange, fixedExpensesSourceRange)
+    const isVariableExpensesRange = isRangeIntersecting(editedRange, variableExpensesSourceRange)
 
     log(
       `onEdit: Range check for ${range.getA1Notation()} - Earnings: ${isEarningsRange}, Fixed: ${isFixedExpensesRange}, Variable: ${isVariableExpensesRange}`
@@ -140,9 +119,7 @@ export function onEdit(e: GoogleAppsScript.Events.SheetsOnEdit) {
       try {
         colorPieChartRedToYellow()
         createInvestmentPlanPieChart()
-        log(
-          `onEdit: fixed expenses chart and investment plan chart updates complete`
-        )
+        log(`onEdit: fixed expenses chart and investment plan chart updates complete`)
       } catch (error) {
         logError(error, 'Fixed expenses chart update failed')
       }
@@ -153,9 +130,7 @@ export function onEdit(e: GoogleAppsScript.Events.SheetsOnEdit) {
       try {
         colorPieChartRedToYellow()
         createInvestmentPlanPieChart()
-        log(
-          `onEdit: variable expenses chart and investment plan chart updates complete`
-        )
+        log(`onEdit: variable expenses chart and investment plan chart updates complete`)
       } catch (error) {
         logError(error, 'Variable expenses chart update failed')
       }

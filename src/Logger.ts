@@ -58,13 +58,9 @@ export const logError = (error: unknown, context = ''): void => {
   if (typeof error === 'string') {
     errorMessage = context ? `${context}: ${error}` : `ERROR: ${error}`
   } else if (error instanceof Error) {
-    errorMessage = context
-      ? `${context}: ${error.message}`
-      : `ERROR: ${error.message}`
+    errorMessage = context ? `${context}: ${error.message}` : `ERROR: ${error.message}`
   } else {
-    errorMessage = context
-      ? `${context}: ${String(error)}`
-      : `ERROR: ${String(error)}`
+    errorMessage = context ? `${context}: ${String(error)}` : `ERROR: ${String(error)}`
   }
 
   log(errorMessage)
@@ -84,9 +80,7 @@ export const logDeployment = (): void => {
   // You can also add this to a cell in your sheet for visual verification
   try {
     const sheet = SpreadsheetApp.getActiveSpreadsheet()
-    const logSheet =
-      sheet.getSheetByName('DeploymentLog') ||
-      sheet.insertSheet('DeploymentLog')
+    const logSheet = sheet.getSheetByName('DeploymentLog') || sheet.insertSheet('DeploymentLog')
 
     // Add deployment entry
     logSheet.appendRow([timestamp, version, 'Auto-deployment'])

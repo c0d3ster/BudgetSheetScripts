@@ -1,9 +1,5 @@
 // Import investment plan data from constants
-import {
-  CHART_CONFIG,
-  SHEET_CONFIG,
-  INVESTMENT_PLANS_CONFIG,
-} from './constants'
+import { CHART_CONFIG, INVESTMENT_PLANS_CONFIG, SHEET_CONFIG } from './constants'
 import { log, logError } from './Logger'
 
 export const getSelectedPlan = (): string | null => {
@@ -13,9 +9,7 @@ export const getSelectedPlan = (): string | null => {
   if (!sheet) {
     throw new Error(`Sheet "${sheetName}" not found`)
   }
-  const selectedPlan = sheet
-    .getRange(SHEET_CONFIG.PLAN_DROPDOWN_CELL)
-    .getValue() as string
+  const selectedPlan = sheet.getRange(SHEET_CONFIG.PLAN_DROPDOWN_CELL).getValue() as string
   if (selectedPlan === 'Select a plan...' || selectedPlan === '') {
     return null
   }
@@ -34,10 +28,7 @@ export const createPlanDropdown = () => {
   const planNames = Object.keys(INVESTMENT_PLANS_CONFIG.PLANS)
 
   // Create data validation for plan dropdown
-  const rule = SpreadsheetApp.newDataValidation()
-    .requireValueInList(planNames, true)
-    .setAllowInvalid(false)
-    .build()
+  const rule = SpreadsheetApp.newDataValidation().requireValueInList(planNames, true).setAllowInvalid(false).build()
 
   dropdownCell.setDataValidation(rule)
 
@@ -56,9 +47,7 @@ export const createInvestmentPlanPieChart = () => {
   }
 
   // Get the actual financial data
-  const investableFunds = sheet
-    .getRange(SHEET_CONFIG.INVESTABLE_FUNDS_CELL)
-    .getValue()
+  const investableFunds = sheet.getRange(SHEET_CONFIG.INVESTABLE_FUNDS_CELL).getValue()
 
   // Get the selected plan from the dropdown
   const selectedPlan = getSelectedPlan()
@@ -126,9 +115,7 @@ export const createInvestmentPlanPieChart = () => {
   }
 
   // Write the sorted data starting at I46 (no header)
-  const dataRange = sheet.getRange(
-    CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE
-  )
+  const dataRange = sheet.getRange(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE)
   dataRange.setValues(sortedData)
 
   // Add a small delay to ensure data is written before updating chart
@@ -142,11 +129,7 @@ export const createInvestmentPlanPieChart = () => {
     if (ranges.length > 0) {
       ranges.forEach(range => {
         const rangeNotation = range.getA1Notation()
-        if (
-          rangeNotation.includes(
-            CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE
-          )
-        ) {
+        if (rangeNotation.includes(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE)) {
           targetChart = chart
         }
       })
@@ -155,12 +138,7 @@ export const createInvestmentPlanPieChart = () => {
 
   if (targetChart) {
     // Create a completely new chart with correct colors from start
-    const success = createNewInvestmentChartWithSlices(
-      sheet,
-      sortedColors,
-      selectedPlan,
-      investableFunds
-    )
+    const success = createNewInvestmentChartWithSlices(sheet, sortedColors, selectedPlan, investableFunds)
     if (success) {
       // Chart updated successfully
       sheet.removeChart(targetChart)
@@ -184,13 +162,8 @@ export const createNewInvestmentChartWithSlices = (
     const chartBuilder = sheet.newChart()
     chartBuilder
       .setChartType(Charts.ChartType.PIE)
-      .addRange(
-        sheet.getRange(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE)
-      )
-      .setOption(
-        'title',
-        `${selectedPlan} ($${investableFunds.toLocaleString()} Investable)`
-      )
+      .addRange(sheet.getRange(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE))
+      .setOption('title', `${selectedPlan} ($${investableFunds.toLocaleString()} Investable)`)
       .setOption('titleTextStyle', { alignment: 'center' })
       .setOption('pieSliceText', 'value')
       .setOption('legend', {

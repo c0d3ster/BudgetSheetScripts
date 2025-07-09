@@ -27,9 +27,7 @@ export const resetSheetSetup = () => {
     log('Data range cells and chart labels restored.')
 
     log('--- SHEET RESET/REPAIR COMPLETE ---')
-    log(
-      'No user data was affected. Only controls, dropdowns, and chart info labels were restored.'
-    )
+    log('No user data was affected. Only controls, dropdowns, and chart info labels were restored.')
   } catch (error) {
     logError(error, 'Sheet reset/repair failed')
     throw error

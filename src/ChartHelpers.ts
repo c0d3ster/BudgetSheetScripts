@@ -1,17 +1,7 @@
-import {
-  CHART_CONFIG,
-  SHEET_CONFIG,
-  COLOR_SCHEMES,
-  ColorScheme,
-  ChartConfig,
-} from './constants'
+import { CHART_CONFIG, SHEET_CONFIG, COLOR_SCHEMES, ColorScheme, ChartConfig } from './constants'
 import { log, logError } from './Logger'
 
-export const colorPieChart = (
-  sheetName: string = 'Monthly',
-  dataRangeConfig: string,
-  colorScheme: ColorScheme
-) => {
+export const colorPieChart = (sheetName: string = 'Monthly', dataRangeConfig: string, colorScheme: ColorScheme) => {
   const ss = SpreadsheetApp.getActiveSpreadsheet()
   const sheet = ss.getSheetByName(sheetName)
   if (!sheet) {
@@ -25,10 +15,7 @@ export const colorPieChart = (
 
   const targetChart = charts.find(chart => {
     const ranges = chart.getRanges()
-    return (
-      ranges.length > 0 &&
-      ranges.some(range => range.getA1Notation().includes(dataRangeConfig))
-    )
+    return ranges.length > 0 && ranges.some(range => range.getA1Notation().includes(dataRangeConfig))
   })
 
   if (!targetChart) {
@@ -54,8 +41,7 @@ export const colorPieChart = (
   // Calculate the true median
   const sorted = [...values].sort((a, b) => a - b)
   const mid = Math.floor(sorted.length / 2)
-  const median =
-    sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2
+  const median = sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2
 
   const interpolateColor = (color1: number[], color2: number[], t: number) => {
     // Linear interpolation between two colors
@@ -98,26 +84,18 @@ export const colorPieChart = (
   let chartConfig: ChartConfig
 
   // Get data ranges from cells
-  const earningsDataRange = sheet
-    .getRange(CHART_CONFIG.EARNINGS.DATA_RANGE_CELL)
-    .getValue()
-  const expenseDataRange = sheet
-    .getRange(CHART_CONFIG.EXPENSES.DATA_RANGE_CELL)
-    .getValue()
+  const earningsDataRange = sheet.getRange(CHART_CONFIG.EARNINGS.DATA_RANGE_CELL).getValue()
+  const expenseDataRange = sheet.getRange(CHART_CONFIG.EXPENSES.DATA_RANGE_CELL).getValue()
 
   if (dataRangeConfig.includes(earningsDataRange)) {
     chartConfig = CHART_CONFIG.EARNINGS
   } else if (dataRangeConfig.includes(expenseDataRange)) {
     chartConfig = CHART_CONFIG.EXPENSES
-  } else if (
-    dataRangeConfig.includes(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE)
-  ) {
+  } else if (dataRangeConfig.includes(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE)) {
     chartConfig = CHART_CONFIG.INVESTMENT_PLANS
   } else {
     // No matching chart configuration found
-    logError(
-      `No matching chart configuration found for data range: ${dataRangeConfig}`
-    )
+    logError(`No matching chart configuration found for data range: ${dataRangeConfig}`)
     return
   }
 
@@ -150,33 +128,17 @@ export const colorPieChart = (
 
 // Convenience functions for backward compatibility
 export const colorPieChartRedToYellow = () => {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
-    SHEET_CONFIG.MONTHLY_SHEET
-  )
-  const expenseDataRange = sheet
-    ?.getRange(CHART_CONFIG.EXPENSES.DATA_RANGE_CELL)
-    .getValue()
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_CONFIG.MONTHLY_SHEET)
+  const expenseDataRange = sheet?.getRange(CHART_CONFIG.EXPENSES.DATA_RANGE_CELL).getValue()
   if (expenseDataRange) {
-    colorPieChart(
-      SHEET_CONFIG.MONTHLY_SHEET,
-      expenseDataRange,
-      COLOR_SCHEMES.RED_TO_YELLOW
-    )
+    colorPieChart(SHEET_CONFIG.MONTHLY_SHEET, expenseDataRange, COLOR_SCHEMES.RED_TO_YELLOW)
   }
 }
 
 export const colorPieChartGreenToLightGreen = () => {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(
-    SHEET_CONFIG.MONTHLY_SHEET
-  )
-  const earningsDataRange = sheet
-    ?.getRange(CHART_CONFIG.EARNINGS.DATA_RANGE_CELL)
-    .getValue()
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_CONFIG.MONTHLY_SHEET)
+  const earningsDataRange = sheet?.getRange(CHART_CONFIG.EARNINGS.DATA_RANGE_CELL).getValue()
   if (earningsDataRange) {
-    colorPieChart(
-      SHEET_CONFIG.MONTHLY_SHEET,
-      earningsDataRange,
-      COLOR_SCHEMES.GREEN_TO_LIGHT_GREEN
-    )
+    colorPieChart(SHEET_CONFIG.MONTHLY_SHEET, earningsDataRange, COLOR_SCHEMES.GREEN_TO_LIGHT_GREEN)
   }
 }
