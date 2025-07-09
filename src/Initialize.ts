@@ -1,12 +1,15 @@
 import { setupDebugMode } from './Debug'
 import { createPlanDropdown } from './InvestmentPlans'
 import { populateChartInfoWithValues } from './ChartHelpers'
-import { log, logError } from './Logger'
+import { log, logError, logDeployment } from './Logger'
 
 // Main initialization script
 // Run this to set up all components of the budget system
 
 export const initializeBudgetSystem = () => {
+  // Log deployment verification first
+  logDeployment()
+
   log("=== BUDGET SYSTEM INITIALIZATION STARTED ===");
 
   try {

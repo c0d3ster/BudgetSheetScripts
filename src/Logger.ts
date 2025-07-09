@@ -57,3 +57,47 @@ export const logError = (error: unknown, context = ''): void => {
   log(errorMessage)
 }
 
+/**
+ * Log deployment information for verification
+ * This helps confirm when changes are actually deployed
+ */
+export const logDeployment = (): void => {
+  const timestamp = new Date().toISOString()
+  const version = `v${Date.now()}`
+
+  console.log(`🚀 Deployment verified: ${version} at ${timestamp}`)
+
+  // Also log to Google Apps Script logs for verification
+  Logger.log(`Deployment verified: ${version} at ${timestamp}`)
+
+  // You can also add this to a cell in your sheet for visual verification
+  try {
+    const sheet = SpreadsheetApp.getActiveSpreadsheet()
+    const logSheet = sheet.getSheetByName('DeploymentLog') || sheet.insertSheet('DeploymentLog')
+
+    // Add deployment entry
+    logSheet.appendRow([timestamp, version, 'Auto-deployment'])
+
+    // Keep only last 10 entries
+    const lastRow = logSheet.getLastRow()
+    if (lastRow > 10) {
+      logSheet.deleteRows(1, lastRow - 10)
+    }
+  } catch (error) {
+    console.log('Could not write to deployment log sheet:', error)
+  }
+}
+
+/**
+ * Simple function to verify deployment status
+ * Call this manually to check if your latest code is deployed
+ */
+export const verifyDeployment = (): string => {
+  const timestamp = new Date().toISOString()
+  const version = `v${Date.now()}`
+
+  logDeployment()
+
+  return `✅ Deployment verified: ${version} at ${timestamp}`
+}
+

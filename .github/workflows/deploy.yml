@@ -1,0 +1,86 @@
+name: Deploy to Google Apps Script
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+        - dev
+        - production
+
+jobs:
+  deploy-dev:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/develop' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev')
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'yarn'
+    
+    - name: Install dependencies
+      run: yarn install --frozen-lockfile
+    
+    - name: Build project
+      run: yarn build
+    
+    - name: Deploy to Dev
+      run: |
+        cp .clasp.dev.json .clasp.json
+        npx clasp push
+      env:
+        CLASP_TOKEN: ${{ secrets.CLASP_TOKEN }}
+
+  deploy-prod:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'yarn'
+    
+    - name: Install dependencies
+      run: yarn install --frozen-lockfile
+    
+    - name: Build project
+      run: yarn build
+    
+    - name: Deploy to Production
+      run: |
+        cp .clasp.prod.json .clasp.json
+        npx clasp push
+      env:
+        CLASP_TOKEN: ${{ secrets.CLASP_TOKEN }}
+    
+    - name: Create Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ github.run_number }}
+        release_name: Release v${{ github.run_number }}
+        body: |
+          Manual deployment to production template sheet.
+          
+          Changes in this release:
+          - Manual deployment triggered
+          - Template sheet updated with latest features
+        draft: false
+        prerelease: false 
