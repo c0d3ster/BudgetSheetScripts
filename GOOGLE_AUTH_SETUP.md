@@ -88,6 +88,25 @@ Use Workload Identity Federation (no service account keys needed).
 17. Add: `attribute.repository == "YOUR_GITHUB_USERNAME/YOUR_REPO_NAME"`
 18. Click **Save**
 
+**To verify your pool and provider names:**
+
+1. Go to **IAM & Admin** > **Workload Identity Federation**
+2. Look at the pool names you actually created
+3. Click on a pool to see the provider names you actually created
+4. Update the workflow with the correct names
+
+**Common naming patterns:**
+
+- Pool names: `github-actions-dev`, `github-actions-prod`
+- Provider names: `github-dev`, `github-prod`
+
+**If you used different names, update the workflow accordingly:**
+
+- Replace `github-actions-dev` with your actual pool name
+- Replace `github-dev` with your actual provider name
+- Replace `github-actions-prod` with your actual pool name
+- Replace `github-prod` with your actual provider name
+
 **Alternative: Skip Workload Identity Federation Entirely**
 If Google Cloud Console keeps being difficult, use the simpler OAuth2 approach:
 
