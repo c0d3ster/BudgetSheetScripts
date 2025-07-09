@@ -1,8 +1,8 @@
 import js from '@eslint/js'
 import tseslint from '@typescript-eslint/eslint-plugin'
 import tsparser from '@typescript-eslint/parser'
-import prettier from 'eslint-plugin-prettier'
 import prettierConfig from 'eslint-config-prettier'
+import prettier from 'eslint-plugin-prettier'
 
 export default [
   js.configs.recommended,
@@ -45,8 +45,7 @@ export default [
     },
     rules: {
       ...tseslint.configs.recommended.rules,
-      ...prettier.configs.recommended.rules,
-      'prettier/prettier': 'error',
+      ...prettierConfig.rules,
       '@typescript-eslint/no-unused-vars': 'error',
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/explicit-function-return-type': 'off',
@@ -60,4 +59,4 @@ export default [
   {
     ignores: ['build/', 'node_modules/', '.clasp.json', '*.min.js'],
   },
-] 
+]
