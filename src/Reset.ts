@@ -1,6 +1,6 @@
 import { setupDebugMode } from './Debug'
 import { createPlanDropdown } from './InvestmentPlans'
-import { setupDataRangeCells } from './ChartHelpers'
+import { setupDataRangeCells } from './DataRangeManager'
 import { log, logError } from './Logger'
 
 // Sheet Reset/Repair Tool

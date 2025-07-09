@@ -4,6 +4,8 @@ export * from './InvestmentPlans'
 export * from './Reset'
 export * from './Debug'
 export * from './ChartHelpers'
+export * from './DataRangeManager'
+export * from './SourceRangeManager'
 export * from './constants'
 
 // Attach all exports to the global object for Apps Script

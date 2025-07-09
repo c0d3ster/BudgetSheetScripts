@@ -50,7 +50,7 @@ export const createInvestmentPlanPieChart = () => {
   }
 
   // Get the actual financial data
-  const investableFunds = sheet.getRange(SHEET_CONFIG.INVESTABLE_FUNDS_CELL).getValue() as number
+  const investableFunds = sheet.getRange(SHEET_CONFIG.INVESTABLE_FUNDS_CELL).getValue()
 
   // Get the selected plan from the dropdown
   const selectedPlan = getSelectedPlan()
@@ -118,7 +118,7 @@ export const createInvestmentPlanPieChart = () => {
   }
 
   // Write the sorted data starting at I46 (no header)
-  const dataRange = sheet.getRange(CHART_CONFIG.INVESTMENT_PLAN.DEFAULT_DATA_RANGE)
+  const dataRange = sheet.getRange(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE)
   dataRange.setValues(sortedData)
 
   // Add a small delay to ensure data is written before updating chart
@@ -132,7 +132,7 @@ export const createInvestmentPlanPieChart = () => {
     if (ranges.length > 0) {
       ranges.forEach(range => {
         const rangeNotation = range.getA1Notation()
-        if (rangeNotation.includes(CHART_CONFIG.INVESTMENT_PLAN.DEFAULT_DATA_RANGE)) {
+        if (rangeNotation.includes(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE)) {
           targetChart = chart
         }
       })
@@ -140,47 +140,48 @@ export const createInvestmentPlanPieChart = () => {
   })
 
   if (targetChart) {
-    // Get the old chart's position
-    const oldChartPosition = targetChart
     // Create a completely new chart with correct colors from start
-    const newChart = createNewInvestmentChartWithSlices(sheet, sortedColors, selectedPlan, investableFunds, oldChartPosition)
-    // Chart updated successfully
-    // Remove the old chart after new one is created
-    sheet.removeChart(targetChart)
+    const success = createNewInvestmentChartWithSlices(sheet, sortedColors, selectedPlan, investableFunds)
+    if (success) {
+      // Chart updated successfully
+      sheet.removeChart(targetChart)
+    }
   } else {
-    log(`No chart found using ${CHART_CONFIG.INVESTMENT_PLAN.DEFAULT_DATA_RANGE} data range. Please create a pie chart that uses ${CHART_CONFIG.INVESTMENT_PLAN.DEFAULT_DATA_RANGE} data.`)
+    log(`No chart found using ${CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE} data range. Please create a pie chart that uses ${CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE} data.`)
   }
 }
 
-export const createNewInvestmentChartWithSlices = (sheet: GoogleAppsScript.Spreadsheet.Sheet, colors: string[], selectedPlan: string, investableFunds: number, oldChartPosition: GoogleAppsScript.Spreadsheet.EmbeddedChart | null = null) => {
-  // Create a new chart with colors array built in
-  const chartBuilder = sheet.newChart()
-  chartBuilder
-    .setChartType(Charts.ChartType.PIE)
-    .addRange(sheet.getRange(CHART_CONFIG.INVESTMENT_PLAN.DEFAULT_DATA_RANGE))
-    .setOption('title', `${selectedPlan} ($${investableFunds.toLocaleString()} Investable)`)
-    .setOption('pieSliceText', 'value')
-    .setOption('legend', { position: 'bottom', textStyle: { fontSize: CHART_CONFIG.INVESTMENT_PLAN.FONT_SIZE } })
-    .setOption('colors', colors)
-    .setOption('pieSliceBorderColor', 'white')
-    .setOption('pieSliceBorderWidth', 2)
-    .setOption('width', CHART_CONFIG.INVESTMENT_PLAN.WIDTH)
-    .setOption('height', CHART_CONFIG.INVESTMENT_PLAN.HEIGHT)
+export const createNewInvestmentChartWithSlices = (sheet: GoogleAppsScript.Spreadsheet.Sheet, colors: string[], selectedPlan: string, investableFunds: number): boolean => {
+  try {
+    // Create a new chart with colors array built in
+    const chartBuilder = sheet.newChart()
+    chartBuilder
+      .setChartType(Charts.ChartType.PIE)
+      .addRange(sheet.getRange(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE))
+      .setOption('title', `${selectedPlan} ($${investableFunds.toLocaleString()} Investable)`)
+      .setOption('titleTextStyle', { alignment: 'center' })
+      .setOption('pieSliceText', 'value')
+      .setOption('legend', { position: 'bottom', textStyle: { fontSize: CHART_CONFIG.INVESTMENT_PLANS.FONT_SIZE } })
+      .setOption('colors', colors)
+      .setOption('pieSliceBorderColor', 'white')
+      .setOption('pieSliceBorderWidth', 2)
+      .setOption('width', CHART_CONFIG.INVESTMENT_PLANS.WIDTH)
+      .setOption('height', CHART_CONFIG.INVESTMENT_PLANS.HEIGHT)
 
-  // Use old chart position if available, otherwise default position
-  if (oldChartPosition) {
-    const containerInfo = oldChartPosition.getContainerInfo()
+    // Use anchor cell for positioning
+    const anchorCell = sheet.getRange(CHART_CONFIG.INVESTMENT_PLANS.ANCHOR_CELL)
     chartBuilder.setPosition(
-      containerInfo.getAnchorRow(),
-      containerInfo.getAnchorColumn(),
-      containerInfo.getOffsetX(),
-      containerInfo.getOffsetY()
+      anchorCell.getRow(),
+      anchorCell.getColumn(),
+      0,
+      0
     )
-  } else {
-    chartBuilder.setPosition(5, 5, 0, 0) // Default position
-  }
 
-  const newChart = chartBuilder.build()
-  sheet.insertChart(newChart)
-  return newChart
+    const newChart = chartBuilder.build()
+    sheet.insertChart(newChart)
+    return true
+  } catch (error) {
+    logError(error, "Failed to create investment plan chart")
+    return false
+  }
 }
