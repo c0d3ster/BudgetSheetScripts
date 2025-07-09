@@ -66,8 +66,8 @@ export const toggleDebugVisibility = () => {
       // Move image off-screen (row 100, col 1)
       img.setAnchorCell(sheet.getRange(100, 1))
     } else {
-      // Move image to cover debug area (row 3, col 21 = U3)
-      img.setAnchorCell(sheet.getRange(3, 21))
+      // Move image to cover debug area (row 3, col 23 = X3)
+      img.setAnchorCell(sheet.getRange(3, 23))
     }
   }
 } 

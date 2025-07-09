@@ -118,7 +118,7 @@ export const createInvestmentPlanPieChart = () => {
   }
 
   // Write the sorted data starting at I46 (no header)
-  const dataRange = sheet.getRange(CHART_CONFIG.INVESTMENT_PLAN.DATA_RANGE)
+  const dataRange = sheet.getRange(CHART_CONFIG.INVESTMENT_PLAN.DEFAULT_DATA_RANGE)
   dataRange.setValues(sortedData)
 
   // Add a small delay to ensure data is written before updating chart
@@ -132,7 +132,7 @@ export const createInvestmentPlanPieChart = () => {
     if (ranges.length > 0) {
       ranges.forEach(range => {
         const rangeNotation = range.getA1Notation()
-        if (rangeNotation.includes(CHART_CONFIG.INVESTMENT_PLAN.DATA_RANGE)) {
+        if (rangeNotation.includes(CHART_CONFIG.INVESTMENT_PLAN.DEFAULT_DATA_RANGE)) {
           targetChart = chart
         }
       })
@@ -144,12 +144,11 @@ export const createInvestmentPlanPieChart = () => {
     const oldChartPosition = targetChart
     // Create a completely new chart with correct colors from start
     const newChart = createNewInvestmentChartWithSlices(sheet, sortedColors, selectedPlan, investableFunds, oldChartPosition)
-    // Update the chart ID in V6
-    sheet.getRange(CHART_CONFIG.INVESTMENT_PLAN.ID_CELL).setValue(newChart.getChartId())
+    // Chart updated successfully
     // Remove the old chart after new one is created
     sheet.removeChart(targetChart)
   } else {
-    log(`No chart found using ${CHART_CONFIG.INVESTMENT_PLAN.DATA_RANGE} data range. Please create a pie chart that uses ${CHART_CONFIG.INVESTMENT_PLAN.DATA_RANGE} data.`)
+    log(`No chart found using ${CHART_CONFIG.INVESTMENT_PLAN.DEFAULT_DATA_RANGE} data range. Please create a pie chart that uses ${CHART_CONFIG.INVESTMENT_PLAN.DEFAULT_DATA_RANGE} data.`)
   }
 }
 
@@ -158,10 +157,10 @@ export const createNewInvestmentChartWithSlices = (sheet: GoogleAppsScript.Sprea
   const chartBuilder = sheet.newChart()
   chartBuilder
     .setChartType(Charts.ChartType.PIE)
-    .addRange(sheet.getRange(CHART_CONFIG.INVESTMENT_PLAN.DATA_RANGE))
+    .addRange(sheet.getRange(CHART_CONFIG.INVESTMENT_PLAN.DEFAULT_DATA_RANGE))
     .setOption('title', `${selectedPlan} ($${investableFunds.toLocaleString()} Investable)`)
     .setOption('pieSliceText', 'value')
-    .setOption('legend', { position: 'bottom' })
+    .setOption('legend', { position: 'bottom', textStyle: { fontSize: CHART_CONFIG.INVESTMENT_PLAN.FONT_SIZE } })
     .setOption('colors', colors)
     .setOption('pieSliceBorderColor', 'white')
     .setOption('pieSliceBorderWidth', 2)

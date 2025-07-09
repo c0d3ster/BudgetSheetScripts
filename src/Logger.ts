@@ -48,7 +48,7 @@ export const clearLogs = () => {
   const sheet = ss.getSheetByName(sheetName)
 
   if (sheet) {
-    sheet.getRange('U20').clearContent()
+    sheet.getRange(DEBUG_CONFIG.LOG_CELL).clearContent()
   }
 }
 
