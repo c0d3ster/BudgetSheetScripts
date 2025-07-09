@@ -1,13 +1,74 @@
-import { DEBUG_CONFIG, SHEET_CONFIG } from './constants'
-import { colorPieChartRedToYellow } from './ChartHelpers'
+import { DEBUG_CONFIG, SHEET_CONFIG, CHART_CONFIG } from './constants'
+import { colorPieChartRedToYellow, colorPieChartGreenToLightGreen } from './ChartHelpers'
 import { createInvestmentPlanPieChart } from './InvestmentPlans'
 import { log, logError } from './Logger'
 import { toggleDebugVisibility } from './Debug'
+import { getEarningsSourceRange, getFixedExpensesSourceRange, getVariableExpensesSourceRange } from './SourceRangeManager'
+
+// Enum for source range types
+enum SourceRangeType {
+  EARNINGS = 'earnings',
+  FIXED_EXPENSES = 'fixed_expenses',
+  VARIABLE_EXPENSES = 'variable_expenses'
+}
+
+// Helper function to check if one range intersects with another range
+const isRangeIntersecting = (editedRange: string, sourceRange: string): boolean => {
+  try {
+    // Parse the ranges to get their boundaries
+    const edited = parseRange(editedRange)
+    const source = parseRange(sourceRange)
+
+    // Check if ranges intersect (overlap)
+    return edited.startRow <= source.endRow &&
+      edited.endRow >= source.startRow &&
+      edited.startCol <= source.endCol &&
+      edited.endCol >= source.startCol
+  } catch (error) {
+    log(`Error parsing ranges: ${error}`)
+    return false
+  }
+}
+
+// Helper function to parse a range string (e.g., "G5:G16", "L5", "P10:Q11") into row/column boundaries
+const parseRange = (rangeStr: string): { startRow: number, startCol: number, endRow: number, endCol: number } => {
+  // Handle single cell (e.g., "L5")
+  const singleCellMatch = rangeStr.match(/^([A-Z]+)(\d+)$/)
+  if (singleCellMatch) {
+    const col = columnToNumber(singleCellMatch[1])
+    const row = parseInt(singleCellMatch[2])
+    return { startRow: row, startCol: col, endRow: row, endCol: col }
+  }
+
+  // Handle range format (e.g., "G5:G16", "P10:Q11")
+  const rangeMatch = rangeStr.match(/^([A-Z]+)(\d+):([A-Z]+)(\d+)$/)
+  if (rangeMatch) {
+    const startCol = columnToNumber(rangeMatch[1])
+    const startRow = parseInt(rangeMatch[2])
+    const endCol = columnToNumber(rangeMatch[3])
+    const endRow = parseInt(rangeMatch[4])
+    return { startRow, startCol, endRow, endCol }
+  }
+
+  throw new Error(`Invalid range format: ${rangeStr}`)
+}
+
+// Helper function to convert column letter to number (A=1, B=2, etc.)
+const columnToNumber = (column: string): number => {
+  let result = 0
+  for (let i = 0; i < column.length; i++) {
+    result = result * 26 + (column.charCodeAt(i) - 64)
+  }
+  return result
+}
 
 export function onEdit(e: GoogleAppsScript.Events.SheetsOnEdit) {
+  // log(`onEdit function called - Sheet: ${e.source.getActiveSheet().getName()}`)
+
   // Check if the edit was in the "Monthly" sheet
   if (e.source.getActiveSheet().getName() === "Monthly") {
     const range = e.range
+    // log(`onEdit triggered for range: ${range.getA1Notation()} (Column: ${range.getColumn()}, Row: ${range.getRow()})`)
 
     // Check if debug mode was toggled
     if (range.getA1Notation() === DEBUG_CONFIG.VALUE_CELL) {
@@ -18,31 +79,56 @@ export function onEdit(e: GoogleAppsScript.Events.SheetsOnEdit) {
     }
 
     // Check if the edit was in the source ranges that feed into expense calculations
-    // F5-16 (column 6), J5-16 (column 10), N5-16 (column 14)
-    const isEarningsRange = range.getColumn() === 6 && range.getRow() >= 5 && range.getRow() <= 16
-    const isFixedExpensesRange = range.getColumn() === 10 && range.getRow() >= 5 && range.getRow() <= 16
-    const isVariableExpensesRange = range.getColumn() === 14 && range.getRow() >= 5 && range.getRow() <= 16
+    // Get source ranges from cells
+    const earningsSourceRange = getEarningsSourceRange()
+    const fixedExpensesSourceRange = getFixedExpensesSourceRange()
+    const variableExpensesSourceRange = getVariableExpensesSourceRange()
 
-    const isSourceRange = isEarningsRange || isFixedExpensesRange || isVariableExpensesRange
+    // Check if source ranges are valid
+    if (!earningsSourceRange || !fixedExpensesSourceRange || !variableExpensesSourceRange) {
+      log(`onEdit: One or more source ranges are empty. Earnings: "${earningsSourceRange}", Fixed: "${fixedExpensesSourceRange}", Variable: "${variableExpensesSourceRange}"`)
+      return
+    }
 
-    if (isSourceRange) {
-      let rangeType = ''
-      if (isEarningsRange) rangeType = 'earnings'
-      else if (isFixedExpensesRange) rangeType = 'fixed expenses'
-      else if (isVariableExpensesRange) rangeType = 'variable expenses'
+    // Check if the edited range intersects with any of the source ranges
+    const editedRange = range.getA1Notation()
+    const isEarningsRange = isRangeIntersecting(editedRange, earningsSourceRange)
+    const isFixedExpensesRange = isRangeIntersecting(editedRange, fixedExpensesSourceRange)
+    const isVariableExpensesRange = isRangeIntersecting(editedRange, variableExpensesSourceRange)
 
-      log(`onEdit: ${rangeType} range (${range.getA1Notation()})`)
+    log(`onEdit: Range check for ${range.getA1Notation()} - Earnings: ${isEarningsRange}, Fixed: ${isFixedExpensesRange}, Variable: ${isVariableExpensesRange}`)
 
-      // Add a small delay to ensure the edit is complete
-      Utilities.sleep(100)
+    // Handle each source range type individually
+    if (isEarningsRange) {
+      log(`onEdit: earnings range (${range.getA1Notation()})`)
+      try {
+        colorPieChartGreenToLightGreen()
+        createInvestmentPlanPieChart()
+        log(`onEdit: earnings chart and investment plan chart updates complete`)
+      } catch (error) {
+        logError(error, "Earnings chart update failed")
+      }
+    }
 
-      // Run both functions - expenses affect investable funds, so update both charts
+    if (isFixedExpensesRange) {
+      log(`onEdit: fixed expenses range (${range.getA1Notation()})`)
       try {
         colorPieChartRedToYellow()
         createInvestmentPlanPieChart()
-        log(`onEdit: expense chart and investment plan chart updates complete`)
+        log(`onEdit: fixed expenses chart and investment plan chart updates complete`)
       } catch (error) {
-        logError(error, "Expense chart update failed")
+        logError(error, "Fixed expenses chart update failed")
+      }
+    }
+
+    if (isVariableExpensesRange) {
+      log(`onEdit: variable expenses range (${range.getA1Notation()})`)
+      try {
+        colorPieChartRedToYellow()
+        createInvestmentPlanPieChart()
+        log(`onEdit: variable expenses chart and investment plan chart updates complete`)
+      } catch (error) {
+        logError(error, "Variable expenses chart update failed")
       }
     }
 
@@ -50,9 +136,6 @@ export function onEdit(e: GoogleAppsScript.Events.SheetsOnEdit) {
     if (range.getA1Notation() === SHEET_CONFIG.PLAN_DROPDOWN_CELL) {
       log(`onEdit: investment plan dropdown (${range.getA1Notation()})`)
 
-      // Add a small delay to ensure the edit is complete
-      Utilities.sleep(100)
-
       // Create the investment plan chart
       try {
         createInvestmentPlanPieChart()
@@ -62,22 +145,6 @@ export function onEdit(e: GoogleAppsScript.Events.SheetsOnEdit) {
       }
     }
 
-    // Check if the edit was in earnings range
-    const earningsColumn = SHEET_CONFIG.EARNINGS_RANGE.split(':')[0].replace(/\d/g, '')
-    const earningsColumnNumber = earningsColumn.charCodeAt(0) - 64 // Convert A=1, B=2, etc.
-    if (range.getColumn() === earningsColumnNumber && range.getRow() >= 5) {
-      log(`onEdit: earnings range (${range.getA1Notation()})`)
 
-      // Add a small delay to ensure the edit is complete
-      Utilities.sleep(100)
-
-      // Create the investment plan chart
-      try {
-        createInvestmentPlanPieChart()
-        log(`onEdit: investment plan chart update complete`)
-      } catch (error) {
-        logError(error, "Investment plan chart update failed")
-      }
-    }
   }
 }

@@ -1,105 +1,11 @@
-import { CHART_CONFIG, SHEET_CONFIG } from './constants'
-import { log, logError } from './Logger'
+import { CHART_CONFIG, SHEET_CONFIG, COLOR_SCHEMES, ColorScheme } from './constants'
+import { log } from './Logger'
 
-export const storeChartInformation = () => {
-  const sheetName = SHEET_CONFIG.MONTHLY_SHEET
-  const ss = SpreadsheetApp.getActiveSpreadsheet()
-  const sheet = ss.getSheetByName(sheetName)
-
-  if (!sheet) {
-    throw new Error(`Sheet "${sheetName}" not found`)
-  }
-
-  // Clear previous chart info (U6:V20 to avoid debug mode area)
-  sheet.getRange('U6:V20').clearContent()
-
-  const charts = sheet.getCharts()
-
-  charts.forEach((chart: GoogleAppsScript.Spreadsheet.EmbeddedChart) => {
-    const ranges = chart.getRanges()
-    if (ranges.length > 0) {
-      ranges.forEach(range => {
-        const rangeNotation = range.getA1Notation()
-
-        // Check if this is the earnings chart (when implemented)
-        if (rangeNotation.includes(CHART_CONFIG.EARNINGS.DATA_RANGE) && CHART_CONFIG.EARNINGS.DATA_RANGE !== 'TBD') {
-          sheet.getRange(CHART_CONFIG.EARNINGS.LABEL_CELL).setValue(CHART_CONFIG.EARNINGS.LABEL)
-          sheet.getRange(CHART_CONFIG.EARNINGS.ID_CELL).setValue(chart.getChartId())
-          log(`Earnings Chart ID: ${chart.getChartId()}`)
-        }
-
-        // Check if this is the expense chart
-        if (rangeNotation.includes(CHART_CONFIG.EXPENSE.DATA_RANGE)) {
-          sheet.getRange(CHART_CONFIG.EXPENSE.LABEL_CELL).setValue(CHART_CONFIG.EXPENSE.LABEL)
-          sheet.getRange(CHART_CONFIG.EXPENSE.ID_CELL).setValue(chart.getChartId())
-          log(`Expense Chart ID: ${chart.getChartId()}`)
-        }
-
-        // Check if this is the investment plan chart
-        if (rangeNotation.includes(CHART_CONFIG.INVESTMENT_PLAN.DATA_RANGE)) {
-          sheet.getRange(CHART_CONFIG.INVESTMENT_PLAN.LABEL_CELL).setValue(CHART_CONFIG.INVESTMENT_PLAN.LABEL)
-          sheet.getRange(CHART_CONFIG.INVESTMENT_PLAN.ID_CELL).setValue(chart.getChartId())
-          log(`Investment Chart ID: ${chart.getChartId()}`)
-        }
-      })
-    }
-  })
-
-  log('Chart information stored in columns U and V')
-}
-
-export const populateChartInfoWithValues = () => {
-  const sheetName = SHEET_CONFIG.MONTHLY_SHEET
-  const ss = SpreadsheetApp.getActiveSpreadsheet()
-  const sheet = ss.getSheetByName(sheetName)
-
-  if (!sheet) {
-    throw new Error(`Sheet "${sheetName}" not found`)
-  }
-
-  // Clear previous chart info (U6:V20 to avoid debug mode area)
-  sheet.getRange('U6:V20').clearContent()
-
-  // Set up the chart info structure
-  sheet.getRange(CHART_CONFIG.EARNINGS.LABEL_CELL).setValue(CHART_CONFIG.EARNINGS.LABEL)
-  sheet.getRange(CHART_CONFIG.EARNINGS.ID_CELL).setValue('TBD - Earnings chart not implemented yet')
-
-  sheet.getRange(CHART_CONFIG.EXPENSE.LABEL_CELL).setValue(CHART_CONFIG.EXPENSE.LABEL)
-  sheet.getRange(CHART_CONFIG.EXPENSE.ID_CELL).setValue('Expense Chart ID will be populated when chart is found')
-
-  sheet.getRange(CHART_CONFIG.INVESTMENT_PLAN.LABEL_CELL).setValue(CHART_CONFIG.INVESTMENT_PLAN.LABEL)
-  sheet.getRange(CHART_CONFIG.INVESTMENT_PLAN.ID_CELL).setValue('Investment Plan Chart ID will be populated when chart is found')
-
-  // Now try to find actual charts and update their IDs
-  const charts = sheet.getCharts()
-
-  charts.forEach((chart: GoogleAppsScript.Spreadsheet.EmbeddedChart) => {
-    const ranges = chart.getRanges()
-    if (ranges.length > 0) {
-      ranges.forEach(range => {
-        const rangeNotation = range.getA1Notation()
-
-        // Check if this is the expense chart
-        if (rangeNotation.includes(CHART_CONFIG.EXPENSE.DATA_RANGE)) {
-          sheet.getRange(CHART_CONFIG.EXPENSE.ID_CELL).setValue(chart.getChartId())
-          log(`Found Expense Chart ID: ${chart.getChartId()}`)
-        }
-
-        // Check if this is the investment plan chart
-        if (rangeNotation.includes(CHART_CONFIG.INVESTMENT_PLAN.DATA_RANGE)) {
-          sheet.getRange(CHART_CONFIG.INVESTMENT_PLAN.ID_CELL).setValue(chart.getChartId())
-          log(`Found Investment Chart ID: ${chart.getChartId()}`)
-        }
-      })
-    }
-  })
-
-  log('Chart information populated with values in columns U and V')
-}
-
-export const colorPieChartRedToYellow = () => {
-  const sheetName = 'Monthly'
-  const startCell = 'Y5'
+export const colorPieChart = (
+  sheetName: string = 'Monthly',
+  dataRangeConfig: string,
+  colorScheme: ColorScheme
+) => {
   const ss = SpreadsheetApp.getActiveSpreadsheet()
   const sheet = ss.getSheetByName(sheetName)
   if (!sheet) {
@@ -113,11 +19,13 @@ export const colorPieChartRedToYellow = () => {
 
   const targetChart = charts.find(chart => {
     const ranges = chart.getRanges()
-    return ranges.length && ranges[0].getCell(1, 1).getA1Notation() === startCell
+    return ranges.length > 0 && ranges.some(range =>
+      range.getA1Notation().includes(dataRangeConfig)
+    )
   })
 
   if (!targetChart) {
-    throw new Error('No matching chart found starting at V5')
+    throw new Error(`No matching chart found for data range ${dataRangeConfig}`)
   }
 
   const dataRange = targetChart.getRanges()[0]
@@ -148,32 +56,44 @@ export const colorPieChartRedToYellow = () => {
     ).join('')
   }
 
-  // Colors as [r, g, b] - using #FFFFCC as the lightest
-  const lowColor = [0xFF, 0xFF, 0xCC] // #FFFFCC - light yellow
-  const medColor = [0xFF, 0xD5, 0x80] // #FFD580 - orange
-  const highColor = [0xF1, 0xCC, 0xCC] // #F1CCCC - red
-
   // Create color array only for valid data rows
   const colorArray: string[] = []
   validRows.forEach(row => {
     let hex: string
     let t: number
-    let colorStep: string
 
     if (row.value <= median) {
       // Interpolate between low and median
       t = (row.value - minVal) / (median - minVal || 1)
-      hex = interpolateColor(lowColor, medColor, t)
-      colorStep = 'low-median'
+      hex = interpolateColor(colorScheme.lowColor, colorScheme.medColor, t)
     } else {
       // Interpolate between median and high
       t = (row.value - median) / (maxVal - median || 1)
-      hex = interpolateColor(medColor, highColor, t)
-      colorStep = 'median-high'
+      hex = interpolateColor(colorScheme.medColor, colorScheme.highColor, t)
     }
 
     colorArray.push(hex)
   })
+
+  log(`Color array length: ${colorArray.length}, Valid rows: ${validRows.length}, Total data rows: ${dataValues.length}`)
+
+  // Determine chart config based on data range
+  let chartConfig: any
+
+  // Get data ranges from cells
+  const earningsDataRange = sheet.getRange(CHART_CONFIG.EARNINGS.DATA_RANGE_CELL).getValue()
+  const expenseDataRange = sheet.getRange(CHART_CONFIG.EXPENSES.DATA_RANGE_CELL).getValue()
+
+  if (dataRangeConfig.includes(earningsDataRange)) {
+    chartConfig = CHART_CONFIG.EARNINGS
+  } else if (dataRangeConfig.includes(expenseDataRange)) {
+    chartConfig = CHART_CONFIG.EXPENSES
+  } else if (dataRangeConfig.includes(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE)) {
+    chartConfig = CHART_CONFIG.INVESTMENT_PLANS
+  } else {
+    // Default fallback
+    chartConfig = { WIDTH: 350, HEIGHT: 231, PIE_SLICE_TEXT: 'value', LEGEND_POSITION: 'auto', FONT_SIZE: 10 }
+  }
 
   // Update the chart with the new colors
   const chartBuilder = sheet.newChart()
@@ -186,13 +106,32 @@ export const colorPieChartRedToYellow = () => {
       targetChart.getContainerInfo().getOffsetX(),
       targetChart.getContainerInfo().getOffsetY()
     )
-    .setOption('pieSliceText', 'value')
-    .setOption('legend', { position: 'bottom' })
+    .setOption('pieSliceText', chartConfig.PIE_SLICE_TEXT)
+    .setOption('legend', { position: chartConfig.LEGEND_POSITION, textStyle: { fontSize: chartConfig.FONT_SIZE } })
     .setOption('colors', colorArray)
     .setOption('pieSliceBorderColor', 'white')
     .setOption('pieSliceBorderWidth', 2)
+    .setOption('width', chartConfig.WIDTH)
+    .setOption('height', chartConfig.HEIGHT)
 
   const newChart = chartBuilder.build()
   sheet.insertChart(newChart)
   sheet.removeChart(targetChart)
+}
+
+// Convenience functions for backward compatibility
+export const colorPieChartRedToYellow = () => {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_CONFIG.MONTHLY_SHEET)
+  const expenseDataRange = sheet?.getRange(CHART_CONFIG.EXPENSES.DATA_RANGE_CELL).getValue()
+  if (expenseDataRange) {
+    colorPieChart(SHEET_CONFIG.MONTHLY_SHEET, expenseDataRange, COLOR_SCHEMES.RED_TO_YELLOW)
+  }
+}
+
+export const colorPieChartGreenToLightGreen = () => {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_CONFIG.MONTHLY_SHEET)
+  const earningsDataRange = sheet?.getRange(CHART_CONFIG.EARNINGS.DATA_RANGE_CELL).getValue()
+  if (earningsDataRange) {
+    colorPieChart(SHEET_CONFIG.MONTHLY_SHEET, earningsDataRange, COLOR_SCHEMES.GREEN_TO_LIGHT_GREEN)
+  }
 } 
