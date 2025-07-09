@@ -107,6 +107,19 @@ Use Workload Identity Federation (no service account keys needed).
 - Replace `github-actions-prod` with your actual pool name
 - Replace `github-prod` with your actual provider name
 
+**Troubleshooting "invalid_target" error:**
+
+1. **Check if the pool exists**: Go to Workload Identity Federation and verify the pool is there
+2. **Check if the provider exists**: Click on the pool and verify the provider is there
+3. **Check if they're enabled**: Make sure the pool and provider are not disabled
+4. **Check the project ID**: Make sure you're using the correct project ID in the secrets
+5. **Create separate pools**: You might need separate pools for dev and prod environments
+
+**If you only created one pool for both environments:**
+
+- Use the same pool name for both dev and prod in the workflow
+- Or create separate pools for dev and prod environments
+
 **Alternative: Skip Workload Identity Federation Entirely**
 If Google Cloud Console keeps being difficult, use the simpler OAuth2 approach:
 

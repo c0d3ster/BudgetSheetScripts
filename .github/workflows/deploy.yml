@@ -43,7 +43,7 @@ jobs:
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: projects/${{ secrets.GOOGLE_PROJECT_ID_DEV }}/locations/global/workloadIdentityPools/github-action-pool/providers/github-dev
+          workload_identity_provider: 'principalSet://iam.googleapis.com/locations/global/workforcePools/github-action-pool/*'
           service_account: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_DEV }}
 
       - name: Deploy to Dev
@@ -73,7 +73,7 @@ jobs:
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: projects/${{ secrets.GOOGLE_PROJECT_ID_PROD }}/locations/global/workloadIdentityPools/github-actions-pool-prod/providers/github-prod
+          workload_identity_provider: 'principalSet://iam.googleapis.com/locations/global/workforcePools/github-actions-pool-prod/*'
           service_account: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_PROD }}
 
       - name: Deploy to Production
