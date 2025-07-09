@@ -1,8 +1,8 @@
+import { colorPieChartGreenToLightGreen, colorPieChartRedToYellow } from './ChartHelpers'
 import { DEBUG_CONFIG, SHEET_CONFIG } from './constants'
-import { colorPieChartRedToYellow, colorPieChartGreenToLightGreen } from './ChartHelpers'
+import { toggleDebugVisibility } from './Debug'
 import { createInvestmentPlanPieChart } from './InvestmentPlans'
 import { log, logError } from './Logger'
-import { toggleDebugVisibility } from './Debug'
 import {
   getEarningsSourceRange,
   getFixedExpensesSourceRange,
