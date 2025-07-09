@@ -1,4 +1,5 @@
 import { DEBUG_CONFIG } from './constants'
+import { logError } from './Logger'
 
 // Debug mode setup and management
 
@@ -8,7 +9,7 @@ export const setupDebugMode = () => {
   const sheet = ss.getSheetByName(sheetName)
 
   if (!sheet) {
-    console.error('Monthly sheet not found for debug setup')
+    logError('Monthly sheet not found for debug setup')
     return
   }
 
@@ -70,4 +71,4 @@ export const toggleDebugVisibility = () => {
       img.setAnchorCell(sheet.getRange(3, 23))
     }
   }
-} 
+}

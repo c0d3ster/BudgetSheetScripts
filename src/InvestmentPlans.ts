@@ -1,5 +1,9 @@
 // Import investment plan data from constants
-import { CHART_CONFIG, SHEET_CONFIG, INVESTMENT_PLANS_CONFIG } from './constants'
+import {
+  CHART_CONFIG,
+  SHEET_CONFIG,
+  INVESTMENT_PLANS_CONFIG,
+} from './constants'
 import { log, logError } from './Logger'
 
 export const getSelectedPlan = (): string | null => {
@@ -9,8 +13,10 @@ export const getSelectedPlan = (): string | null => {
   if (!sheet) {
     throw new Error(`Sheet "${sheetName}" not found`)
   }
-  const selectedPlan = sheet.getRange(SHEET_CONFIG.PLAN_DROPDOWN_CELL).getValue() as string
-  if (selectedPlan === "Select a plan..." || selectedPlan === "") {
+  const selectedPlan = sheet
+    .getRange(SHEET_CONFIG.PLAN_DROPDOWN_CELL)
+    .getValue() as string
+  if (selectedPlan === 'Select a plan...' || selectedPlan === '') {
     return null
   }
   return selectedPlan
@@ -50,12 +56,14 @@ export const createInvestmentPlanPieChart = () => {
   }
 
   // Get the actual financial data
-  const investableFunds = sheet.getRange(SHEET_CONFIG.INVESTABLE_FUNDS_CELL).getValue()
+  const investableFunds = sheet
+    .getRange(SHEET_CONFIG.INVESTABLE_FUNDS_CELL)
+    .getValue()
 
   // Get the selected plan from the dropdown
   const selectedPlan = getSelectedPlan()
   if (!selectedPlan) {
-    log("No plan selected. Please select a plan from the dropdown.")
+    log('No plan selected. Please select a plan from the dropdown.')
     return
   }
 
@@ -118,7 +126,9 @@ export const createInvestmentPlanPieChart = () => {
   }
 
   // Write the sorted data starting at I46 (no header)
-  const dataRange = sheet.getRange(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE)
+  const dataRange = sheet.getRange(
+    CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE
+  )
   dataRange.setValues(sortedData)
 
   // Add a small delay to ensure data is written before updating chart
@@ -132,7 +142,11 @@ export const createInvestmentPlanPieChart = () => {
     if (ranges.length > 0) {
       ranges.forEach(range => {
         const rangeNotation = range.getA1Notation()
-        if (rangeNotation.includes(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE)) {
+        if (
+          rangeNotation.includes(
+            CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE
+          )
+        ) {
           targetChart = chart
         }
       })
@@ -141,27 +155,48 @@ export const createInvestmentPlanPieChart = () => {
 
   if (targetChart) {
     // Create a completely new chart with correct colors from start
-    const success = createNewInvestmentChartWithSlices(sheet, sortedColors, selectedPlan, investableFunds)
+    const success = createNewInvestmentChartWithSlices(
+      sheet,
+      sortedColors,
+      selectedPlan,
+      investableFunds
+    )
     if (success) {
       // Chart updated successfully
       sheet.removeChart(targetChart)
     }
   } else {
-    log(`No chart found using ${CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE} data range. Please create a pie chart that uses ${CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE} data.`)
+    log(
+      `No chart found using ${CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE} data range. Please create a pie chart that uses ${CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE} data.`
+    )
   }
 }
 
-export const createNewInvestmentChartWithSlices = (sheet: GoogleAppsScript.Spreadsheet.Sheet, colors: string[], selectedPlan: string, investableFunds: number): boolean => {
+export const createNewInvestmentChartWithSlices = (
+  // eslint-disable-next-line
+  sheet: GoogleAppsScript.Spreadsheet.Sheet,
+  colors: string[],
+  selectedPlan: string,
+  investableFunds: number
+): boolean => {
   try {
     // Create a new chart with colors array built in
     const chartBuilder = sheet.newChart()
     chartBuilder
       .setChartType(Charts.ChartType.PIE)
-      .addRange(sheet.getRange(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE))
-      .setOption('title', `${selectedPlan} ($${investableFunds.toLocaleString()} Investable)`)
+      .addRange(
+        sheet.getRange(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE)
+      )
+      .setOption(
+        'title',
+        `${selectedPlan} ($${investableFunds.toLocaleString()} Investable)`
+      )
       .setOption('titleTextStyle', { alignment: 'center' })
       .setOption('pieSliceText', 'value')
-      .setOption('legend', { position: 'bottom', textStyle: { fontSize: CHART_CONFIG.INVESTMENT_PLANS.FONT_SIZE } })
+      .setOption('legend', {
+        position: 'bottom',
+        textStyle: { fontSize: CHART_CONFIG.INVESTMENT_PLANS.FONT_SIZE },
+      })
       .setOption('colors', colors)
       .setOption('pieSliceBorderColor', 'white')
       .setOption('pieSliceBorderWidth', 2)
@@ -170,18 +205,13 @@ export const createNewInvestmentChartWithSlices = (sheet: GoogleAppsScript.Sprea
 
     // Use anchor cell for positioning
     const anchorCell = sheet.getRange(CHART_CONFIG.INVESTMENT_PLANS.ANCHOR_CELL)
-    chartBuilder.setPosition(
-      anchorCell.getRow(),
-      anchorCell.getColumn(),
-      0,
-      0
-    )
+    chartBuilder.setPosition(anchorCell.getRow(), anchorCell.getColumn(), 0, 0)
 
     const newChart = chartBuilder.build()
     sheet.insertChart(newChart)
     return true
   } catch (error) {
-    logError(error, "Failed to create investment plan chart")
+    logError(error, 'Failed to create investment plan chart')
     return false
   }
 }

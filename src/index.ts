@@ -11,6 +11,6 @@ export * from './constants'
 // Attach all exports to the global object for Apps Script
 import * as exportsAll from './Trigger'
 for (const key in exportsAll) {
-  // @ts-ignore
+  // @ts-expect-error - globalThis is not typed
   globalThis[key] = exportsAll[key]
 }
