@@ -44,11 +44,13 @@ Use Workload Identity Federation (no service account keys needed).
 5. Select **"Editor"** role
 6. Click **Continue** then **Done**
 
-### 4. Set Up Workload Identity Federation
+### 4. Set Up Workload Identity Federation (NOT Workforce Identity Federation!)
+
+**IMPORTANT: Make sure you're using "Workload Identity Federation", NOT "Workforce Identity Federation"**
 
 **For Dev Project:**
 
-1. Go to **IAM & Admin** > **Workload Identity Federation**
+1. Go to **IAM & Admin** > **Workload Identity Federation** (NOT Workforce Identity Federation!)
 2. Click **Create Pool**
 3. Name it "github-actions-dev"
 4. Click **Create**
@@ -69,7 +71,7 @@ Use Workload Identity Federation (no service account keys needed).
 
 **For Production Project:**
 
-1. Go to **IAM & Admin** > **Workload Identity Federation**
+1. Go to **IAM & Admin** > **Workload Identity Federation** (NOT Workforce Identity Federation!)
 2. Click **Create Pool**
 3. Name it "github-actions-prod"
 4. Click **Create**
@@ -90,7 +92,7 @@ Use Workload Identity Federation (no service account keys needed).
 
 **To verify your pool and provider names:**
 
-1. Go to **IAM & Admin** > **Workload Identity Federation**
+1. Go to **IAM & Admin** > **Workload Identity Federation** (NOT Workforce!)
 2. Look at the pool names you actually created
 3. Click on a pool to see the provider names you actually created
 4. Update the workflow with the correct names
@@ -119,6 +121,22 @@ Use Workload Identity Federation (no service account keys needed).
 
 - Use the same pool name for both dev and prod in the workflow
 - Or create separate pools for dev and prod environments
+
+**Workload Identity Pools vs Workforce Pools:**
+
+- **Workload Identity Pools**: Use format `//iam.googleapis.com/projects/PROJECT_ID/locations/global/workloadIdentityPools/POOL_ID/providers/PROVIDER_ID`
+- **Workforce Pools**: Use format `//iam.googleapis.com/locations/global/workforcePools/POOL_ID/providers/PROVIDER_ID`
+
+**Check which one you created:**
+
+- Go to **IAM & Admin** > **Workload Identity Federation** (for Workload Identity Pools)
+- Go to **IAM & Admin** > **Workforce Pools** (for Workforce Pools)
+
+**If you accidentally created Workforce Identity Federation:**
+
+1. Delete the Workforce Identity Federation pools you created
+2. Go to **IAM & Admin** > **Workload Identity Federation** instead
+3. Create new pools using the steps above
 
 **Alternative: Skip Workload Identity Federation Entirely**
 If Google Cloud Console keeps being difficult, use the simpler OAuth2 approach:
