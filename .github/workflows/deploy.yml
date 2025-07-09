@@ -1,4 +1,4 @@
-name: Deploy to Google Apps Script
+name: Build Project
 
 on:
   push:
@@ -16,8 +16,11 @@ on:
           - dev
           - production
 
+permissions:
+  contents: read
+
 jobs:
-  deploy-dev:
+  build-dev:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' || github.ref == 'refs/heads/develop' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'dev')
 
@@ -36,14 +39,10 @@ jobs:
       - name: Build project
         run: yarn build
 
-      - name: Deploy to Dev
-        run: |
-          cp .clasp.dev.json .clasp.json
-          npx clasp push
-        env:
-          CLASP_TOKEN: ${{ secrets.CLASP_TOKEN }}
+      - name: Build Complete
+        run: echo "Build completed successfully"
 
-  deploy-prod:
+  build-prod:
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
 
@@ -62,12 +61,8 @@ jobs:
       - name: Build project
         run: yarn build
 
-      - name: Deploy to Production
-        run: |
-          cp .clasp.prod.json .clasp.json
-          npx clasp push
-        env:
-          CLASP_TOKEN: ${{ secrets.CLASP_TOKEN }}
+      - name: Build Complete
+        run: echo "Build completed successfully"
 
       - name: Create Release
         uses: actions/create-release@v1

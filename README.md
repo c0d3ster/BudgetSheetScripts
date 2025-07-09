@@ -9,24 +9,37 @@ Google Apps Script project for budget tracking and automation, written in **Type
 ## Source Code Organization
 
 ### Overview
+
 This directory contains the Google Apps Script source code for the Budget Sheet automation system. The code is written in TypeScript and organized for better maintainability and configuration management.
 
 ### File Structure
 
 #### Core Scripts
+
 - **InvestmentPlans.ts** - Main investment plan chart creation and management
 - **Trigger.ts** - Event handlers for spreadsheet edits
 - **ChartHelpers.ts** - Chart styling and color management
 - **Debug.ts** - Debug mode functionality
-- **Initialize.ts** - Initialization and setup functions
 - **Logger.ts** - Logging utilities
-- **DebtToIncome.ts** - Debt-to-income ratio calculations
+- **Reset.ts** - Reset functionality
+- **index.ts** - Main entry point
+
+#### Managers Directory (`/managers/`)
+
+Organized manager files for data and range operations:
+
+- **SourceRangeManager.ts** - Source data range management
+- **DataRangeManager.ts** - Data range management and operations
+- **index.ts** - Barrel file for easy imports
 
 #### Configuration Files
+
 - **constants/index.ts** - Main constants barrel file (imports from organized structure)
 
 #### Constants Directory (`/constants/`)
+
 Organized configuration files for better maintainability:
+
 - **chartConfig.ts** - Chart-specific configuration (ranges, labels, dimensions)
 - **sheetConfig.ts** - Sheet names and cell references
 - **debugConfig.ts** - Debug mode configuration
@@ -39,12 +52,14 @@ Organized configuration files for better maintainability:
 ## Key Features
 
 ### Investment Plans
+
 - **Conservative Plan**: 50% Emergency Fund, balanced distribution
 - **Risktaker Plan**: 35% Cryptocurrencies, minimal emergency fund
 - **Family Plan**: 30% Education Fund, 25% Vacation Fund
 - **Baller Plan**: 50% Vacation Fund, 25% Precious Metals
 
 ### Chart Categories
+
 - Emergency Fund (Red)
 - Brokerage Account (Teal)
 - Precious Metals (Yellow)
@@ -58,15 +73,18 @@ Organized configuration files for better maintainability:
 ## Configuration Management
 
 ### Adding New Investment Plans
+
 1. Edit `constants/investmentPlansConfig.ts`
 2. Add new plan object with category percentages
 3. Ensure percentages total 100% or less
 
 ### Changing Cell References
+
 1. Update appropriate file in `/constants/` directory
 2. All scripts will automatically use new references
 
 ### Adding New Chart Categories
+
 1. Update `constants/investmentPlansConfig.ts` with new category and color
 2. Update all investment plans to include the new category
 3. Ensure color is consistent across all plans
@@ -76,12 +94,14 @@ Organized configuration files for better maintainability:
 ## Usage
 
 ### Main Functions
+
 - `createInvestmentPlanPieChart()` - Creates/updates investment plan chart
 - `createPlanDropdown()` - Creates plan selection dropdown
 - `getSelectedPlan()` - Retrieves currently selected plan
 - `onEdit(e)` - Trigger function for automatic updates
 
 ### Constants Usage
+
 ```typescript
 import { CHART_CONFIG, SHEET_CONFIG, INVESTMENT_PLANS_CONFIG } from './constants'
 ```
@@ -89,6 +109,7 @@ import { CHART_CONFIG, SHEET_CONFIG, INVESTMENT_PLANS_CONFIG } from './constants
 ---
 
 ## Best Practices
+
 - Always use constants instead of hardcoded cell references
 - Update configuration files when changing sheet layout
 - Test chart updates after modifying investment plan percentages
@@ -99,11 +120,13 @@ import { CHART_CONFIG, SHEET_CONFIG, INVESTMENT_PLANS_CONFIG } from './constants
 ## Setup
 
 1. Install dependencies:
+
    ```bash
    yarn install
    ```
 
 2. Authenticate with Google Apps Scripts:
+
    ```bash
    clasp login
    ```
@@ -117,10 +140,12 @@ import { CHART_CONFIG, SHEET_CONFIG, INVESTMENT_PLANS_CONFIG } from './constants
 ## Development Workflow
 
 ### Environment Setup
+
 - **Dev Sheet**: Used for development and testing
 - **Production Template Sheet**: Used for customer distribution (Etsy)
 
 ### Daily Development
+
 - **Auto-push development mode**: `yarn dev:auto` - Watches for changes and automatically pushes to dev sheet
 - **Manual push to dev**: `yarn push:dev` - Manual build and push to dev sheet
 - **Development mode with watch**: `yarn dev` - Watches for changes and auto-rebuilds (does NOT auto-push)
@@ -132,15 +157,18 @@ import { CHART_CONFIG, SHEET_CONFIG, INVESTMENT_PLANS_CONFIG } from './constants
 > **⚠️ Note**: The auto-push workflow (`yarn dev:auto`) is designed for single-developer use. With multiple developers, everyone would be overwriting the same dev sheet, causing conflicts and lost work. For team development, each developer would need their own local Google Apps Script project.
 
 ### Production Deployments
+
 - **Manual production push**: `yarn push:prod` - Manually push to production template
 - **Open production sheet**: `yarn open:prod` - Open production template sheet
 
 ### Automated Deployments (GitHub Actions)
+
 - **PR/Develop branch**: Automatically deploys to dev sheet
 - **Manual production deployment**: Use GitHub Actions "Run workflow" button
 - **Releases**: Created on manual production deployments
 
 ### Typical Development Cycle
+
 ```bash
 # 1. Start development with auto-push
 yarn dev:auto              # Watch for changes and auto-push to dev sheet
@@ -162,26 +190,60 @@ git push origin feature-branch
 
 ---
 
+## Manual Deployment
+
+**For Development:**
+
+1. Checkout the develop branch: `git checkout develop`
+2. Build the project: `yarn build`
+3. Deploy to dev: `clasp push`
+
+**For Production:**
+
+1. Checkout main branch: `git checkout main`
+2. Build the project: `yarn build`
+3. Deploy to production: `clasp push`
+
+### Build Commands
+
+- `yarn build` - Build the TypeScript code
+- `yarn dev` - Watch mode for development
+- `yarn lint` - Run ESLint
+
+## Project Structure
+
+- `src/` - TypeScript source code
+- `build/` - Compiled JavaScript (deployed to Google Apps Script)
+- `.clasp.dev.json` - Development script configuration
+- `.clasp.prod.json` - Production script configuration
+
 ## Notes
+
 - All `.ts` files are compiled and pushed to Google Apps Script
 - Use `yarn push:dev` after making changes to sync with dev sheet
 - Use GitHub Actions for production deployments
 - The TypeScript configuration provides better IntelliSense in your editor
+- The GitHub Actions workflow builds the project on PRs and pushes
+- Manual deployment is used for Google Apps Script deployment
+- Use `clasp push` to deploy changes to Google Apps Script
 
 ## Deployment Verification
 
 ### Automatic Verification
+
 - **Deployment logs** are automatically created when `initializeBudgetSystem()` runs
 - **Check Google Apps Script logs** for deployment timestamps
 - **DeploymentLog sheet** is created with deployment history
 
 ### Manual Verification
+
 - **Run `verifyDeployment()`** in Google Apps Script editor to check current deployment
 - **Check the DeploymentLog sheet** in your spreadsheet for deployment history
 - **Look for console logs** with deployment timestamps
 
 ### Verification Steps
+
 1. **After deployment**: Run `verifyDeployment()` in Apps Script editor
 2. **Check logs**: View execution logs in Apps Script
 3. **Check sheet**: Look for "DeploymentLog" sheet with timestamps
-4. **Test functionality**: Verify your changes work as expected 
+4. **Test functionality**: Verify your changes work as expected

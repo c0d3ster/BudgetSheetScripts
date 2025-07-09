@@ -39,11 +39,11 @@ export const INVESTMENT_PLANS_CONFIG = {
   // Investment Plan Category Colors - Consistent colors for each category
   CATEGORY_COLORS: {
     'Emergency Fund': '#FF6B6B', // Red
-    'Brokerage Account': '#4ECDC4', // Teal
+    'Brokerage Account': '#00A651', // TD Ameritrade Green
     'Precious Metals': '#FFD93D', // Yellow
     Cryptocurrencies: '#6C5CE7', // Purple
-    'Vacation Fund': '#A8F6CF', // Light Green
-    'Education Fund': '#FF8C42', // Orange
+    'Vacation Fund': '#A8E6CF', // Light Green with blue tint
+    'Education Fund': '#FF6B35', // Light Virginia Tech Orange
     Remainder: '#E0E0E0', // Light Gray
   },
 }

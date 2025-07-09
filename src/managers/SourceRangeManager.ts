@@ -1,5 +1,5 @@
-import { SHEET_CONFIG, SOURCE_RANGE_CONFIG } from './constants'
-import { log } from './Logger'
+import { SHEET_CONFIG, SOURCE_RANGE_CONFIG } from '@/constants'
+import { log } from '@/Logger'
 
 // Functions to manage source range cells
 export const updateEarningsSourceRange = (newRange: string) => {

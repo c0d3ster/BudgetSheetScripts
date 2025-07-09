@@ -3,12 +3,8 @@
     "target": "ES2020",
     "module": "ES2020",
     "moduleResolution": "node",
-    "lib": [
-      "ES2020"
-    ],
-    "types": [
-      "google-apps-script"
-    ],
+    "lib": ["ES2020"],
+    "types": ["google-apps-script"],
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -21,14 +17,12 @@
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "noUnusedLocals": false,
-    "noUnusedParameters": false
+    "noUnusedParameters": false,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "build",
-    "dist"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "build", "dist"]
 }

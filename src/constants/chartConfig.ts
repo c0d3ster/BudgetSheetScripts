@@ -27,7 +27,7 @@ export const CHART_CONFIG: Record<string, ChartConfig> = {
     DEFAULT_DATA_RANGE: 'AB5:AC24', // Default earnings data range
     LABEL_CELL: 'X6',
     LABEL: 'Earnings Chart',
-    WIDTH: 377,
+    WIDTH: 379,
     HEIGHT: 210,
     PIE_SLICE_TEXT: 'value', // Show dollar amounts in slices
     LEGEND_POSITION: 'auto', // Auto legend position
@@ -39,7 +39,7 @@ export const CHART_CONFIG: Record<string, ChartConfig> = {
     DEFAULT_DATA_RANGE: 'AE5:AF24', // Default expense data range
     LABEL_CELL: 'X7',
     LABEL: 'Expenses Chart',
-    WIDTH: 377,
+    WIDTH: 379,
     HEIGHT: 210,
     PIE_SLICE_TEXT: 'value', // Show dollar amounts in slices
     LEGEND_POSITION: 'auto', // Auto legend position
@@ -51,7 +51,7 @@ export const CHART_CONFIG: Record<string, ChartConfig> = {
     DATA_RANGE_CELL: 'Y8', // Cell containing the data range
     LABEL_CELL: 'X8',
     LABEL: 'Investment Plans Chart',
-    WIDTH: 402,
+    WIDTH: 403,
     HEIGHT: 350,
     PIE_SLICE_TEXT: 'value', // Show dollar amounts in slices
     LEGEND_POSITION: 'bottom', // Use bottom legend for investment plan

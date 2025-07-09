@@ -1,5 +1,5 @@
-import { CHART_CONFIG, SHEET_CONFIG, SOURCE_RANGE_CONFIG } from './constants'
-import { log } from './Logger'
+import { CHART_CONFIG, SHEET_CONFIG, SOURCE_RANGE_CONFIG } from '@/constants'
+import { log } from '@/Logger'
 
 export const setupDataRangeCells = () => {
   const sheetName = SHEET_CONFIG.MONTHLY_SHEET
