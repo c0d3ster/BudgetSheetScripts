@@ -166,4 +166,22 @@ git push origin feature-branch
 - All `.ts` files are compiled and pushed to Google Apps Script
 - Use `yarn push:dev` after making changes to sync with dev sheet
 - Use GitHub Actions for production deployments
-- The TypeScript configuration provides better IntelliSense in your editor 
+- The TypeScript configuration provides better IntelliSense in your editor
+
+## Deployment Verification
+
+### Automatic Verification
+- **Deployment logs** are automatically created when `initializeBudgetSystem()` runs
+- **Check Google Apps Script logs** for deployment timestamps
+- **DeploymentLog sheet** is created with deployment history
+
+### Manual Verification
+- **Run `verifyDeployment()`** in Google Apps Script editor to check current deployment
+- **Check the DeploymentLog sheet** in your spreadsheet for deployment history
+- **Look for console logs** with deployment timestamps
+
+### Verification Steps
+1. **After deployment**: Run `verifyDeployment()` in Apps Script editor
+2. **Check logs**: View execution logs in Apps Script
+3. **Check sheet**: Look for "DeploymentLog" sheet with timestamps
+4. **Test functionality**: Verify your changes work as expected 
