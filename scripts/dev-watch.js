@@ -5,13 +5,15 @@
 import { execSync } from 'child_process'
 import { watch } from 'fs'
 import { join } from 'path'
+import { createInterface } from 'readline'
 
 console.log('🚀 Starting dev mode with auto-push to dev sheet...')
 console.log('📁 Watching for changes in src/ directory...')
-console.log('⏱️  Debounced pushing (2 second delay)...')
+console.log('⏱️  Debounced pushing (30 second delay)...')
+console.log('💡 Press Enter to push immediately')
 
 // Configuration
-const DEBOUNCE_DELAY = 2000 // 2 seconds
+const DEBOUNCE_DELAY = 30000 // 30 seconds
 
 let pushTimeout = null
 let isPushing = false
@@ -81,6 +83,22 @@ const schedulePush = filename => {
   // Only log if this is a new change
   if (!wasAlreadyPending) {
     console.log(`📝 File changed: ${filename} (${pendingChanges.size} pending changes)`)
+    console.log(`⏰ Auto-push scheduled in ${DEBOUNCE_DELAY / 1000} seconds (press Enter to push now)`)
+    console.log('') // Add spacing after the timer line
+  }
+}
+
+// Manual push trigger
+const triggerManualPush = () => {
+  if (pendingChanges.size > 0) {
+    console.log('🚀 Manual push triggered!')
+    if (pushTimeout) {
+      clearTimeout(pushTimeout)
+      pushTimeout = null
+    }
+    debouncedPush()
+  } else {
+    console.log('📝 No pending changes to push')
   }
 }
 
@@ -103,5 +121,17 @@ watch(srcDir, { recursive: true }, (eventType, filename) => {
   }
 })
 
+// Set up manual push trigger
+const rl = createInterface({
+  input: process.stdin,
+  output: process.stdout,
+})
+
+rl.on('line', () => {
+  triggerManualPush()
+})
+
 console.log('👀 Watching for changes... (Press Ctrl+C to stop)')
-console.log('💡 Changes will be batched and pushed after 2 seconds of inactivity')
+console.log('💡 Changes will be batched and pushed after 30 seconds of inactivity')
+console.log('💡 Press Enter to push immediately')
+console.log('') // Add spacing after the timer line

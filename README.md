@@ -146,7 +146,7 @@ import { CHART_CONFIG, SHEET_CONFIG, INVESTMENT_PLANS_CONFIG } from './constants
 
 ### Daily Development
 
-- **Auto-push development mode**: `yarn dev:auto` - Watches for changes and automatically pushes to dev sheet (with 2-second debouncing)
+- **Smart auto-push development mode**: `yarn dev:auto` - Watches for changes with 30-second debouncing and manual push trigger
 - **Manual push to dev**: `yarn push:dev` - Manual build and push to dev sheet
 - **Development mode with watch**: `yarn dev` - Watches for changes and auto-rebuilds (does NOT auto-push)
 - **Pull changes from dev**: `yarn pull:dev` - Syncs changes from dev sheet
@@ -156,11 +156,37 @@ import { CHART_CONFIG, SHEET_CONFIG, INVESTMENT_PLANS_CONFIG } from './constants
 
 > **💡 Development Tips**:
 >
-> - Use `yarn dev:auto` for quick iterations and immediate testing
-> - The auto-push now batches changes and waits 2 seconds after the last file change
+> - Use `yarn dev:auto` for smart development with full control
+> - Press Enter anytime to push immediately (bypasses 30-second timer)
+> - Changes are batched and pushed after 30 seconds of inactivity
 > - For manual control, just use `yarn push:dev` directly
 
 > **⚠️ Note**: The auto-push workflow (`yarn dev:auto`) is designed for single-developer use. With multiple developers, everyone would be overwriting the same dev sheet, causing conflicts and lost work. For team development, each developer would need their own local Google Apps Script project.
+
+### Troubleshooting
+
+#### **Common Issues**
+
+**Timer not resetting on file changes?**
+
+- Check that you're editing files in the `src/` directory
+- Ensure the file watcher is running (you should see "👀 Watching for changes...")
+
+**Manual push not working?**
+
+- Make sure you're pressing Enter in the terminal where `yarn dev:auto` is running
+- Check that there are pending changes (you should see pending changes count)
+
+**Changes not being batched?**
+
+- The script deduplicates file changes, so multiple saves of the same file won't create multiple entries
+- Each unique file change is tracked separately
+
+**Push failing?**
+
+- Check your `.clasp.dev.json` configuration
+- Ensure you're logged in with `clasp login`
+- Check Google Apps Script quotas and limits
 
 ### Production Deployments
 
@@ -173,17 +199,83 @@ import { CHART_CONFIG, SHEET_CONFIG, INVESTMENT_PLANS_CONFIG } from './constants
 - **Manual production deployment**: Use GitHub Actions "Run workflow" button
 - **Releases**: Created on manual production deployments
 
+### Smart Development Workflow
+
+The new `yarn dev:auto` provides intelligent development with full control:
+
+#### **Features**
+
+- **30-second debouncing**: Timer resets with each file change
+- **Manual push trigger**: Press Enter anytime to push immediately
+- **Change batching**: Multiple files pushed together
+- **Deduplicated logging**: No spam from multiple file watcher events
+
+#### **Usage Examples**
+
+```bash
+# Start smart development mode
+yarn dev:auto
+```
+
+**Typical workflow:**
+
+```bash
+# 1. Start development
+yarn dev:auto
+
+# 2. Make changes to files
+# You'll see: "📝 File changed: src/Logger.ts (1 pending changes)"
+# You'll see: "⏰ Auto-push scheduled in 30 seconds (press Enter to push now)"
+
+# 3. Make more changes quickly
+# Timer resets each time, giving you 30 seconds from the last change
+
+# 4. Push when ready (two options):
+# Option A: Press Enter to push immediately
+# Option B: Wait 30 seconds for auto-push
+
+# 5. See results: "📤 Pushing 3 file changes to dev sheet..."
+```
+
+#### **Real-world Scenarios**
+
+**Scenario 1: Quick Iteration**
+
+```bash
+# Make a small change
+# Press Enter immediately
+# Test the change
+# Repeat
+```
+
+**Scenario 2: Multiple Changes**
+
+```bash
+# Make several changes across multiple files
+# Timer keeps resetting (30 seconds from last change)
+# Press Enter when all changes are ready
+# All changes pushed together
+```
+
+**Scenario 3: Set and Forget**
+
+```bash
+# Make changes
+# Walk away for coffee
+# Come back to find changes auto-pushed after 30 seconds
+```
+
 ### Typical Development Cycle
 
 ```bash
-# 1. Start development with auto-push
-yarn dev:auto              # Watch for changes and auto-push to dev sheet
+# 1. Start development with smart auto-push
+yarn dev:auto              # Watch for changes with full control
 
 # 2. Make changes to TypeScript files
-# (yarn dev:auto will auto-rebuild and push to dev sheet)
+# (Timer resets with each change, or press Enter to push immediately)
 
 # 3. Test changes immediately in your dev sheet
-# (no manual push needed!)
+# (Manual or automatic push based on your preference!)
 
 # 4. Commit and push
 git add .
