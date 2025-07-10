@@ -1,5 +1,5 @@
 import { colorPieChartGreenToLightGreen, colorPieChartRedToYellow } from '@/ChartHelpers'
-import { DEBUG_CONFIG, SHEET_CONFIG } from '@/constants'
+import { DEBUG_CONFIG, INVESTMENT_PLANS_CONFIG } from '@/constants'
 import { toggleDebugVisibility } from '@/Debug'
 import { createInvestmentPlanPieChart } from '@/InvestmentPlans'
 import { log, logError } from '@/Logger'
@@ -133,7 +133,7 @@ export function onEdit(e: GoogleAppsScript.Events.SheetsOnEdit) {
     }
 
     // Check if the edit was in the plan dropdown
-    if (range.getA1Notation() === SHEET_CONFIG.PLAN_DROPDOWN_CELL) {
+    if (range.getA1Notation() === INVESTMENT_PLANS_CONFIG.PLAN_DROPDOWN_CELL) {
       log(`onEdit: investment plan dropdown (${range.getA1Notation()})`)
 
       // Create the investment plan chart
