@@ -44,7 +44,7 @@ export const INVESTMENT_PLANS_CONFIG = {
       'Education Fund': 0,
       tagline: 'For those who want to ball out!',
       description:
-        'Luxury-focused strategy emphasizing lifestyle and experiences. Heavy investment in vacation funding and precious metals. Live your best life in the moment!',
+        'Luxury-focused strategy emphasizing lifestyle and experiences. Heavy investment in vacation funding and precious metals to live your best life in the here and now..',
     },
   },
 
