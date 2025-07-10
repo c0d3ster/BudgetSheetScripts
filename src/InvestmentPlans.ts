@@ -9,11 +9,39 @@ export const getSelectedPlan = (): string | null => {
   if (!sheet) {
     throw new Error(`Sheet "${sheetName}" not found`)
   }
-  const selectedPlan = sheet.getRange(SHEET_CONFIG.PLAN_DROPDOWN_CELL).getValue() as string
+  const selectedPlan = sheet.getRange(INVESTMENT_PLANS_CONFIG.PLAN_DROPDOWN_CELL).getValue() as string
   if (selectedPlan === 'Select a plan...' || selectedPlan === '') {
     return null
   }
   return selectedPlan
+}
+
+export const updatePlanDescription = (selectedPlan: string) => {
+  const sheetName = SHEET_CONFIG.MONTHLY_SHEET
+  const ss = SpreadsheetApp.getActiveSpreadsheet()
+  const sheet = ss.getSheetByName(sheetName)
+  if (!sheet) {
+    throw new Error(`Sheet "${sheetName}" not found`)
+  }
+
+  const plans = INVESTMENT_PLANS_CONFIG.PLANS
+  const planData = plans[selectedPlan as keyof typeof plans]
+
+  if (planData && planData.tagline && planData.description) {
+    const taglineCell = sheet.getRange(INVESTMENT_PLANS_CONFIG.PLAN_TAGLINE_CELL)
+    const descriptionCell = sheet.getRange(INVESTMENT_PLANS_CONFIG.PLAN_DESCRIPTION_CELL)
+
+    taglineCell.setValue(planData.tagline)
+    descriptionCell.setValue(planData.description)
+    log(`Updated plan tagline and description for: ${selectedPlan}`)
+  } else {
+    // Clear both cells if no plan selected or plan not found
+    const taglineCell = sheet.getRange(INVESTMENT_PLANS_CONFIG.PLAN_TAGLINE_CELL)
+    const descriptionCell = sheet.getRange(INVESTMENT_PLANS_CONFIG.PLAN_DESCRIPTION_CELL)
+
+    taglineCell.setValue('')
+    descriptionCell.setValue('')
+  }
 }
 
 export const createPlanDropdown = () => {
@@ -24,7 +52,7 @@ export const createPlanDropdown = () => {
     throw new Error(`Sheet "${sheetName}" not found`)
   }
 
-  const dropdownCell = sheet.getRange(SHEET_CONFIG.PLAN_DROPDOWN_CELL)
+  const dropdownCell = sheet.getRange(INVESTMENT_PLANS_CONFIG.PLAN_DROPDOWN_CELL)
   const planNames = Object.keys(INVESTMENT_PLANS_CONFIG.PLANS)
 
   // Create data validation for plan dropdown
@@ -35,6 +63,7 @@ export const createPlanDropdown = () => {
   // Set default value if cell is empty
   if (!dropdownCell.getValue()) {
     dropdownCell.setValue(planNames[0]) // Set to first plan as default
+    updatePlanDescription(planNames[0]) // Update description for default plan
   }
 }
 
@@ -53,8 +82,12 @@ export const createInvestmentPlanPieChart = () => {
   const selectedPlan = getSelectedPlan()
   if (!selectedPlan) {
     log('No plan selected. Please select a plan from the dropdown.')
+    updatePlanDescription('') // Clear description
     return
   }
+
+  // Update the plan description
+  updatePlanDescription(selectedPlan)
 
   const plans = INVESTMENT_PLANS_CONFIG.PLANS
   const planData = plans[selectedPlan as keyof typeof plans]
@@ -70,6 +103,9 @@ export const createInvestmentPlanPieChart = () => {
 
   // Calculate amounts for all categories
   Object.entries(planData).forEach(([category, percentage]) => {
+    // Skip the description and tagline properties
+    if (category === 'description' || category === 'tagline') return
+
     const calculatedAmount = (investableFunds * (percentage as number)) / 100
     const roundedAmount = Math.floor(calculatedAmount / 50) * 50
     chartData.push([category, roundedAmount])
@@ -147,6 +183,15 @@ export const createInvestmentPlanPieChart = () => {
     log(
       `No chart found using ${CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE} data range. Please create a pie chart that uses ${CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE} data.`
     )
+  }
+}
+
+export const updateCurrentPlanDescription = () => {
+  const selectedPlan = getSelectedPlan()
+  if (selectedPlan) {
+    updatePlanDescription(selectedPlan)
+  } else {
+    updatePlanDescription('')
   }
 }
 
