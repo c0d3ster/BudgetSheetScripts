@@ -146,13 +146,19 @@ import { CHART_CONFIG, SHEET_CONFIG, INVESTMENT_PLANS_CONFIG } from './constants
 
 ### Daily Development
 
-- **Auto-push development mode**: `yarn dev:auto` - Watches for changes and automatically pushes to dev sheet
+- **Auto-push development mode**: `yarn dev:auto` - Watches for changes and automatically pushes to dev sheet (with 2-second debouncing)
 - **Manual push to dev**: `yarn push:dev` - Manual build and push to dev sheet
 - **Development mode with watch**: `yarn dev` - Watches for changes and auto-rebuilds (does NOT auto-push)
 - **Pull changes from dev**: `yarn pull:dev` - Syncs changes from dev sheet
 - **Open dev sheet**: `yarn open:dev`
 - **View logs**: `yarn logs`
 - **Check status**: `yarn status`
+
+> **💡 Development Tips**:
+>
+> - Use `yarn dev:auto` for quick iterations and immediate testing
+> - The auto-push now batches changes and waits 2 seconds after the last file change
+> - For manual control, just use `yarn push:dev` directly
 
 > **⚠️ Note**: The auto-push workflow (`yarn dev:auto`) is designed for single-developer use. With multiple developers, everyone would be overwriting the same dev sheet, causing conflicts and lost work. For team development, each developer would need their own local Google Apps Script project.
 

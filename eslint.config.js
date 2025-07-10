@@ -57,6 +57,32 @@ export default [
     },
   },
   {
+    files: ['scripts/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 2020,
+      sourceType: 'module',
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+        Buffer: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
+      },
+    },
+    plugins: {
+      prettier: prettier,
+    },
+    rules: {
+      ...prettierConfig.rules,
+      'no-console': 'off',
+      'no-unused-vars': 'warn',
+    },
+  },
+  {
     ignores: ['build/', 'node_modules/', '.clasp.json', '*.min.js'],
   },
 ]
