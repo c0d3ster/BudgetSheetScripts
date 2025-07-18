@@ -3,7 +3,7 @@ export const INVESTMENT_PLANS_CONFIG = {
   // Investment Plan Data - Percentage distributions for different investment strategies
   PLANS: {
     'Conservative Plan': {
-      'Emergency Fund': 50,
+      Savings: 50,
       'Brokerage Account': 10,
       'Precious Metals': 10,
       Cryptocurrencies: 0,
@@ -11,21 +11,21 @@ export const INVESTMENT_PLANS_CONFIG = {
       'Education Fund': 20,
       tagline: 'Minimal risk with steady, predictable growth',
       description:
-        'Safe, conservative approach focused on building a strong emergency fund and education savings. Recommended for those with less than 6 months of living expenses saved.',
+        'Safe, conservative approach focused on building a strong savings and education fund. Recommended for those with less than 6 months of living expenses saved.',
     },
     'Risktaker Plan': {
-      'Emergency Fund': 10,
-      'Brokerage Account': 20,
+      Savings: 10,
+      'Brokerage Account': 30,
       'Precious Metals': 10,
-      Cryptocurrencies: 35,
+      Cryptocurrencies: 25,
       'Vacation Fund': 10,
       'Education Fund': 15,
       tagline: 'High-risk, high-reward strategy',
       description:
-        'Strong focus on cryptocurrencies and aggressive growth investments. Suitable for those comfortable with volatility that already have 6 months of living expenses saved.',
+        'Strong focus on aggressive growth investments and cryptocurrencies. Suitable for those comfortable with volatility that already have 6 months of living expenses saved.',
     },
     'Family Plan': {
-      'Emergency Fund': 20,
+      Savings: 20,
       'Brokerage Account': 10,
       'Precious Metals': 10,
       Cryptocurrencies: 5,
@@ -36,7 +36,7 @@ export const INVESTMENT_PLANS_CONFIG = {
         'Balanced approach prioritizing family needs with strong education funding and vacation savings. Services such as Acorns Early or Henry are great for education fund management.',
     },
     'Baller Plan': {
-      'Emergency Fund': 0,
+      Savings: 0,
       'Brokerage Account': 10,
       'Precious Metals': 25,
       Cryptocurrencies: 15,
@@ -50,8 +50,8 @@ export const INVESTMENT_PLANS_CONFIG = {
 
   // Investment Plan Category Colors - Consistent colors for each category
   CATEGORY_COLORS: {
-    'Emergency Fund': '#FF6B6B', // Red
-    'Brokerage Account': '#00A651', // TD Ameritrade Green
+    Savings: '#00A651', // Savings Green
+    'Brokerage Account': '#FF6B6B', // Growth Red
     'Precious Metals': '#FFD93D', // Yellow
     Cryptocurrencies: '#6C5CE7', // Purple
     'Vacation Fund': '#A8E6CF', // Light Green with blue tint

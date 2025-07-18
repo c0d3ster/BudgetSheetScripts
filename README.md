@@ -53,15 +53,15 @@ Organized configuration files for better maintainability:
 
 ### Investment Plans
 
-- **Conservative Plan**: 50% Emergency Fund, balanced distribution
-- **Risktaker Plan**: 35% Cryptocurrencies, minimal emergency fund
+- **Conservative Plan**: 50% Savings, balanced distribution
+- **Risktaker Plan**: 30% Brokerage Account, 25% Cryptocurrencies
 - **Family Plan**: 30% Education Fund, 25% Vacation Fund
 - **Baller Plan**: 50% Vacation Fund, 25% Precious Metals
 
 ### Chart Categories
 
-- Emergency Fund (Red)
-- Brokerage Account (Teal)
+- Savings (Green)
+- Brokerage Account (Red)
 - Precious Metals (Yellow)
 - Cryptocurrencies (Purple)
 - Vacation Fund (Light Green)
