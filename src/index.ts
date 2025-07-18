@@ -4,6 +4,7 @@ export * from './InvestmentPlans'
 export * from './Reset'
 export * from './Debug'
 export * from './ChartHelpers'
+export * from './RecurringHelpers'
 export * from './managers'
 export * from './constants'
 
