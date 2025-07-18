@@ -86,8 +86,7 @@ export const createInvestmentPlanPieChart = () => {
     return
   }
 
-  // Update the plan description
-  updatePlanDescription(selectedPlan)
+  // Don't update description yet - we'll do it with the chart update
 
   const plans = INVESTMENT_PLANS_CONFIG.PLANS
   const planData = plans[selectedPlan as keyof typeof plans]
@@ -150,12 +149,7 @@ export const createInvestmentPlanPieChart = () => {
     }
   }
 
-  // Write the sorted data starting at I46 (no header)
-  const dataRange = sheet.getRange(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE)
-  dataRange.setValues(sortedData)
-
-  // Add a small delay to ensure data is written before updating chart
-  Utilities.sleep(100)
+  // Don't write data yet - we'll do it all at once with the chart update
 
   const charts = sheet.getCharts()
   let targetChart = null
@@ -173,10 +167,15 @@ export const createInvestmentPlanPieChart = () => {
   })
 
   if (targetChart) {
-    // Create a completely new chart with correct colors from start
+    // Create new chart in correct position first (invisible until positioned)
     const success = createNewInvestmentChartWithSlices(sheet, sortedColors, selectedPlan, investableFunds)
     if (success) {
-      // Chart updated successfully
+      // Now update all data at once (description + chart data)
+      updatePlanDescription(selectedPlan) // Update description
+      const dataRange = sheet.getRange(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE)
+      dataRange.setValues(sortedData) // Update chart data
+
+      // Remove old chart after new one is in place
       sheet.removeChart(targetChart)
     }
   } else {
