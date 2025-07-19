@@ -44,6 +44,35 @@ export const updatePlanDescription = (selectedPlan: string) => {
   }
 }
 
+export const removeOldInvestmentChart = (
+  // eslint-disable-next-line
+  sheet: GoogleAppsScript.Spreadsheet.Sheet
+): void => {
+  const charts = sheet.getCharts()
+  let targetChart = null
+
+  // Find chart by data range with early break
+  for (let i = 0; i < charts.length; i++) {
+    const chart = charts[i]
+    const ranges = chart.getRanges()
+    for (let j = 0; j < ranges.length; j++) {
+      const range = ranges[j]
+      const rangeNotation = range.getA1Notation()
+      if (rangeNotation.includes(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE)) {
+        targetChart = chart
+        break // Exit inner loop
+      }
+    }
+    if (targetChart) break // Exit outer loop
+  }
+
+  if (targetChart) {
+    sheet.removeChart(targetChart)
+  } else {
+    log(`🔍 No investment chart found`)
+  }
+}
+
 export const createPlanDropdown = () => {
   const sheetName = SHEET_CONFIG.MONTHLY_SHEET
   const ss = SpreadsheetApp.getActiveSpreadsheet()
@@ -112,6 +141,9 @@ export const createInvestmentPlanPieChart = () => {
     throw new Error(`Sheet "${sheetName}" not found`)
   }
 
+  // Find and remove old chart immediately
+  removeOldInvestmentChart(sheet)
+
   // Get the actual financial data
   const investableFunds = sheet.getRange(SHEET_CONFIG.INVESTABLE_FUNDS_CELL).getValue()
 
@@ -121,27 +153,6 @@ export const createInvestmentPlanPieChart = () => {
     log('No plan selected. Please select a plan from the dropdown.')
     updatePlanDescription('') // Clear description
     return
-  }
-
-  // Find and remove old chart immediately
-  const charts = sheet.getCharts()
-  let targetChart = null
-
-  charts.forEach(chart => {
-    const ranges = chart.getRanges()
-    if (ranges.length > 0) {
-      ranges.forEach(range => {
-        const rangeNotation = range.getA1Notation()
-        if (rangeNotation.includes(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE)) {
-          targetChart = chart
-        }
-      })
-    }
-  })
-
-  if (targetChart) {
-    // Remove old chart immediately
-    sheet.removeChart(targetChart)
   }
 
   // Update the plan description
