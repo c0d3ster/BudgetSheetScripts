@@ -63,11 +63,25 @@ export function onEdit(e: GoogleAppsScript.Events.SheetsOnEdit) {
 
   // Check if the edit was in the "Monthly" sheet
   if (e.source.getActiveSheet().getName() === 'Monthly') {
-    const range = e.range
-    // log(`onEdit triggered for range: ${range.getA1Notation()} (Column: ${range.getColumn()}, Row: ${range.getRow()})`)
+    const editedRange = e.range.getA1Notation()
+    //log(`onEdit triggered for range: ${editedRange} (Column: ${e.range.getColumn()}, Row: ${e.range.getRow()})`)
+
+    // Check if the edit was in the plan dropdown
+    if (editedRange === INVESTMENT_PLANS_CONFIG.PLAN_DROPDOWN_CELL) {
+      log(`onEdit: investment plan dropdown (${editedRange})`)
+
+      // Create the investment plan chart
+      try {
+        createInvestmentPlanPieChart()
+        log(`onEdit: investment plan chart update complete`)
+      } catch (error) {
+        logError(error, 'Investment plan chart update failed')
+      }
+      return
+    }
 
     // Check if debug mode was toggled
-    if (range.getA1Notation() === DEBUG_CONFIG.VALUE_CELL) {
+    if (editedRange === DEBUG_CONFIG.VALUE_CELL) {
       log(`onEdit: Debug mode toggle`)
       toggleDebugVisibility()
       log(`onEdit: Debug mode toggle complete`)
@@ -89,18 +103,17 @@ export function onEdit(e: GoogleAppsScript.Events.SheetsOnEdit) {
     }
 
     // Check if the edited range intersects with any of the source ranges
-    const editedRange = range.getA1Notation()
     const isEarningsRange = isRangeIntersecting(editedRange, earningsSourceRange)
     const isFixedExpensesRange = isRangeIntersecting(editedRange, fixedExpensesSourceRange)
     const isVariableExpensesRange = isRangeIntersecting(editedRange, variableExpensesSourceRange)
 
     log(
-      `onEdit: Range check for ${range.getA1Notation()} - Earnings: ${isEarningsRange}, Fixed: ${isFixedExpensesRange}, Variable: ${isVariableExpensesRange}`
+      `onEdit: Range check for ${editedRange} - Earnings: ${isEarningsRange}, Fixed: ${isFixedExpensesRange}, Variable: ${isVariableExpensesRange}`
     )
 
     // Handle each source range type individually
     if (isEarningsRange) {
-      log(`onEdit: earnings range (${range.getA1Notation()})`)
+      log(`onEdit: earnings range (${editedRange})`)
       try {
         colorPieChartGreenToLightGreen()
         createInvestmentPlanPieChart()
@@ -111,7 +124,7 @@ export function onEdit(e: GoogleAppsScript.Events.SheetsOnEdit) {
     }
 
     if (isFixedExpensesRange) {
-      log(`onEdit: fixed expenses range (${range.getA1Notation()})`)
+      log(`onEdit: fixed expenses range (${editedRange})`)
       try {
         colorPieChartRedToYellow()
         createInvestmentPlanPieChart()
@@ -122,26 +135,13 @@ export function onEdit(e: GoogleAppsScript.Events.SheetsOnEdit) {
     }
 
     if (isVariableExpensesRange) {
-      log(`onEdit: variable expenses range (${range.getA1Notation()})`)
+      log(`onEdit: variable expenses range (${editedRange})`)
       try {
         colorPieChartRedToYellow()
         createInvestmentPlanPieChart()
         log(`onEdit: variable expenses chart and investment plan chart updates complete`)
       } catch (error) {
         logError(error, 'Variable expenses chart update failed')
-      }
-    }
-
-    // Check if the edit was in the plan dropdown
-    if (range.getA1Notation() === INVESTMENT_PLANS_CONFIG.PLAN_DROPDOWN_CELL) {
-      log(`onEdit: investment plan dropdown (${range.getA1Notation()})`)
-
-      // Create the investment plan chart
-      try {
-        createInvestmentPlanPieChart()
-        log(`onEdit: investment plan chart update complete`)
-      } catch (error) {
-        logError(error, 'Investment plan chart update failed')
       }
     }
   }

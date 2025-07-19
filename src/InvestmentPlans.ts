@@ -67,6 +67,43 @@ export const createPlanDropdown = () => {
   }
 }
 
+export const moveLoadingChart = (
+  // eslint-disable-next-line
+  sheet: GoogleAppsScript.Spreadsheet.Sheet,
+  targetRow: number,
+  targetColumn: number
+): void => {
+  try {
+    const charts = sheet.getCharts()
+
+    // Find loading chart by looking for chart that uses investable funds data
+    charts.forEach(chart => {
+      const ranges = chart.getRanges()
+      if (ranges.length > 0) {
+        ranges.forEach(range => {
+          const rangeNotation = range.getA1Notation()
+          log(`🔄 Checking range: ${rangeNotation}`)
+          // Check if this chart uses the investable funds cell
+          const investableFundsCell = SHEET_CONFIG.INVESTABLE_FUNDS_CELL
+          log(`🔄 Checking if range ${rangeNotation} contains ${investableFundsCell}`)
+
+          if (rangeNotation.includes(investableFundsCell)) {
+            log('🔄 Loading chart found, moving to position')
+
+            // Move the chart using updateChart()
+            chart = chart.modify().setPosition(targetRow, targetColumn, 0, 0).build()
+
+            sheet.updateChart(chart)
+            log(`🔄 Loading chart moved to row ${targetRow}, col ${targetColumn}`)
+          }
+        })
+      }
+    })
+  } catch (error) {
+    logError(error, 'Failed to move loading chart')
+  }
+}
+
 export const createInvestmentPlanPieChart = () => {
   const sheetName = SHEET_CONFIG.MONTHLY_SHEET
   const ss = SpreadsheetApp.getActiveSpreadsheet()
@@ -86,7 +123,29 @@ export const createInvestmentPlanPieChart = () => {
     return
   }
 
-  // Don't update description yet - we'll do it with the chart update
+  // Find and remove old chart immediately
+  const charts = sheet.getCharts()
+  let targetChart = null
+
+  charts.forEach(chart => {
+    const ranges = chart.getRanges()
+    if (ranges.length > 0) {
+      ranges.forEach(range => {
+        const rangeNotation = range.getA1Notation()
+        if (rangeNotation.includes(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE)) {
+          targetChart = chart
+        }
+      })
+    }
+  })
+
+  if (targetChart) {
+    // Remove old chart immediately
+    sheet.removeChart(targetChart)
+  }
+
+  // Update the plan description
+  updatePlanDescription(selectedPlan)
 
   const plans = INVESTMENT_PLANS_CONFIG.PLANS
   const planData = plans[selectedPlan as keyof typeof plans]
@@ -149,39 +208,17 @@ export const createInvestmentPlanPieChart = () => {
     }
   }
 
-  // Don't write data yet - we'll do it all at once with the chart update
+  // Write the sorted data starting at I46 (no header)
+  const dataRange = sheet.getRange(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE)
+  dataRange.setValues(sortedData)
 
-  const charts = sheet.getCharts()
-  let targetChart = null
+  // Add a small delay to ensure data is written before updating chart
+  Utilities.sleep(100)
 
-  charts.forEach(chart => {
-    const ranges = chart.getRanges()
-    if (ranges.length > 0) {
-      ranges.forEach(range => {
-        const rangeNotation = range.getA1Notation()
-        if (rangeNotation.includes(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE)) {
-          targetChart = chart
-        }
-      })
-    }
-  })
-
-  if (targetChart) {
-    // Create new chart in correct position first (invisible until positioned)
-    const success = createNewInvestmentChartWithSlices(sheet, sortedColors, selectedPlan, investableFunds)
-    if (success) {
-      // Now update all data at once (description + chart data)
-      updatePlanDescription(selectedPlan) // Update description
-      const dataRange = sheet.getRange(CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE)
-      dataRange.setValues(sortedData) // Update chart data
-
-      // Remove old chart after new one is in place
-      sheet.removeChart(targetChart)
-    }
-  } else {
-    log(
-      `No chart found using ${CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE} data range. Please create a pie chart that uses ${CHART_CONFIG.INVESTMENT_PLANS.DEFAULT_DATA_RANGE} data.`
-    )
+  // Create a completely new chart with correct colors from start
+  const success = createNewInvestmentChartWithSlices(sheet, sortedColors, selectedPlan, investableFunds)
+  if (success) {
+    // Chart updated successfully
   }
 }
 
