@@ -96,43 +96,6 @@ export const createPlanDropdown = () => {
   }
 }
 
-export const moveLoadingChart = (
-  // eslint-disable-next-line
-  sheet: GoogleAppsScript.Spreadsheet.Sheet,
-  targetRow: number,
-  targetColumn: number
-): void => {
-  try {
-    const charts = sheet.getCharts()
-
-    // Find loading chart by looking for chart that uses investable funds data
-    charts.forEach(chart => {
-      const ranges = chart.getRanges()
-      if (ranges.length > 0) {
-        ranges.forEach(range => {
-          const rangeNotation = range.getA1Notation()
-          log(`🔄 Checking range: ${rangeNotation}`)
-          // Check if this chart uses the investable funds cell
-          const investableFundsCell = SHEET_CONFIG.INVESTABLE_FUNDS_CELL
-          log(`🔄 Checking if range ${rangeNotation} contains ${investableFundsCell}`)
-
-          if (rangeNotation.includes(investableFundsCell)) {
-            log('🔄 Loading chart found, moving to position')
-
-            // Move the chart using updateChart()
-            chart = chart.modify().setPosition(targetRow, targetColumn, 0, 0).build()
-
-            sheet.updateChart(chart)
-            log(`🔄 Loading chart moved to row ${targetRow}, col ${targetColumn}`)
-          }
-        })
-      }
-    })
-  } catch (error) {
-    logError(error, 'Failed to move loading chart')
-  }
-}
-
 export const createInvestmentPlanPieChart = () => {
   const sheetName = SHEET_CONFIG.MONTHLY_SHEET
   const ss = SpreadsheetApp.getActiveSpreadsheet()
